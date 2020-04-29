@@ -2,8 +2,7 @@ import * as React from "react";
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
-
-export default function MainScreen() {
+export default function MainScreen(props) {
     const recaptchaVerifier = React.useRef(null);
     const [phoneNumber, setPhoneNumber] = React.useState();
     const [verificationId, setVerificationId] = React.useState();
@@ -14,16 +13,20 @@ export default function MainScreen() {
        ? { text: "To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device."}
         : undefined);
 
-
+    const redirectToUserFeed = () =>{
+        props.navigation.navigate('Login')
+    }
     return (
         <View style={{ padding: 10, marginTop: 10 }}>
             <FirebaseRecaptchaVerifierModal
                 ref={recaptchaVerifier}
                 firebaseConfig={firebaseConfig}
             />
+
             {showButton ? (
                 <View>
                     <Text style={styles.headerText}>What's your phone number?</Text>
+
                     <View style={styles.textInputView}>
                         <TextInput
                             style={styles.textInput}
@@ -54,6 +57,7 @@ export default function MainScreen() {
                             setButton(false);
                         } catch (err) {
                             showMessage({ text: `Error: ${err.message}`, color: "red" });
+
                         }
                     }}>
                         <View style={styles.button}>
@@ -72,6 +76,7 @@ export default function MainScreen() {
                     </View>
                 </View>
             ) : null}
+
 
             {showButton ? null: (
 
@@ -96,6 +101,7 @@ export default function MainScreen() {
                                               await firebase.auth().signInWithCredential(credential);
                                               showMessage({ text: "Phone authentication successful 👍" });
                                               setButton(true);
+                                              redirectToUserFeed();
                                           } catch (err) {
                                               showMessage({ text: `Error: ${err.message}`, color: "red" });
                                           }
