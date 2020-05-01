@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
-import * as Font from 'expo-font';
 import CustomButton from "../components/customButtons/customButtons";
 import {connect} from 'react-redux';
 
@@ -22,9 +21,7 @@ class Login extends React.Component{
     }
 
     async componentDidMount(){
-       await Font.loadAsync({
-            'OldStandardTT-Regular': require('../assets/fonts/OldStandardTT-Regular.ttf')
-        });
+
         this.setState({fontLoaded:true});
     }
     render() {

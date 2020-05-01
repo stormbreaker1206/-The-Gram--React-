@@ -8,6 +8,7 @@ class Settings extends React.Component{
     signOut = async () => {
         try {
             await firebase.auth().signOut();
+            this.props.signOut()
 
         } catch (error) {
             alert('Unable to sign out right now');
@@ -15,15 +16,21 @@ class Settings extends React.Component{
     };
     render() {
         return(
-            <View syle={style.container}>
+            <View style={style.container}>
                 <CustomButton text='Logout Out' onPress={this.signOut} />
             </View>
         )
     }
 }
+const mapDispatchToprops = dispatch =>{
+    return{
 
+        signOut: () => dispatch({type: 'SIGN_OUT'})
+    }
 
-export default Settings
+}
+
+export default connect(null, mapDispatchToprops)(Settings)
 
 const style = StyleSheet.create({
     container:{

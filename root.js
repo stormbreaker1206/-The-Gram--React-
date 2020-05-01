@@ -8,12 +8,18 @@ import UserFeed from "./screens/mainScreen/UserFeed";
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import {createDrawerNavigator, DrawerItem} from "@react-navigation/drawer"
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {FIREBASE_CONFIG} from "./config/config";
 import {connect} from 'react-redux';
 import Settings from "./screens/mainScreen/Settings";
+import Notification from "./screens/mainScreen/Notification";
 import SplashScreen from "./screens/SplashScreen";
+import MyProfile from "./screens/mainScreen/MyProfile";
+import * as Font from "expo-font";
+import Friends from "./screens/mainScreen/Friends";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+const Tabs = createBottomTabNavigator();
 
 class Root extends React.Component{
     constructor() {
@@ -22,22 +28,28 @@ class Root extends React.Component{
 
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.checkIfLoggedIn()
+
+        await Font.loadAsync({
+            'OldStandardTT-Regular': require('./assets/fonts/OldStandardTT-Regular.ttf')
+        });
 
     }
     checkIfLoggedIn = () => {
+        let unsubscribe
         try {
-            firebase.auth().onAuthStateChanged(user => {
+           unsubscribe = firebase.auth().onAuthStateChanged(user => {
                 if(user){
                     //sign in user
-                    this.props.signIn()
+                    this.props.signIn(user)
                     console.log('user sign in')
                 }else {
                     console.log('no user signed in')
                     //sign out user
                   this.props.signOut()
                 }
+                unsubscribe();
             })
         }catch (e) {
             //sign out
@@ -105,13 +117,25 @@ const mapDispatchToprops = dispatch =>{
 }
 
 
+
+const HomeTabNavigator = () => (
+    <Tabs.Navigator>
+        <Tabs.Screen name="UserFeed" component={UserFeed} />
+        <Tabs.Screen name="Notification" component={Notification} />
+        <Tabs.Screen name="Friends" component={Friends} />
+    </Tabs.Navigator>
+)
+
 const AppDrawerNavigator = () => (
     <Drawer.Navigator>
-        <Drawer.Screen name="UserFeed" component={UserFeed} />
-        <Drawer.Screen name="Settings" component={Settings} />
+        <Drawer.Screen name="UserFeed" component={HomeTabNavigator} />
+        <Drawer.Screen name="MyProfile" component={MyProfile} />
+
 
     </Drawer.Navigator>
-)
+);
+
+
 
 const styles = StyleSheet.create({
     container: {

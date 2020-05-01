@@ -1,19 +1,19 @@
-import * as React from "react";
-import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from "react-native";
+import React from "react";
+import { Text, View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
-export default function MainScreen(props) {
-    const recaptchaVerifier = React.useRef(null);
+import {connect} from 'react-redux';
+
+const MainScreen = ({signIn}) => {
     const [phoneNumber, setPhoneNumber] = React.useState();
     const [verificationId, setVerificationId] = React.useState();
     const [verificationCode, setVerificationCode] = React.useState();
     const [showButton, setButton]= React.useState(true);
-    const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
     const [message, showMessage] = React.useState(null);
+    const recaptchaVerifier = React.useRef(null);
+    const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
 
-    const redirectToUserFeed = () =>{
-        props.navigation.navigate('Login')
-    }
+
     return (
         <View style={{ padding: 10, marginTop: 10 }}>
             <FirebaseRecaptchaVerifierModal
@@ -33,31 +33,33 @@ export default function MainScreen(props) {
                             autoCompleteType="tel"
                             keyboardType="phone-pad"
                             textContentType="telephoneNumber"
-                            onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+                            onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)
+                            }
                         />
                     </View>
-                    <TouchableOpacity style={{alignItems:'center'}}  disabled={!phoneNumber} onPress={async () => {
-                        // The FirebaseRecaptchaVerifierModal ref implements the
-                        // FirebaseAuthApplicationVerifier interface and can be
-                        // passed directly to `verifyPhoneNumber`.
-                        try {
-                            const phoneProvider = new firebase.auth.PhoneAuthProvider();
-                            const verificationId = await phoneProvider.verifyPhoneNumber(
-                                phoneNumber,
-                                recaptchaVerifier.current
-                            );
-                            setVerificationId(verificationId);
-                            showMessage({
-                                text: "Verification code has been sent to your phone.",
+                    <TouchableOpacity style={{alignItems:'center'}}  disabled={!phoneNumber} onPress={
+                        async () => {
+                            // The FirebaseRecaptchaVerifierModal ref implements the
+                            // FirebaseAuthApplicationVerifier interface and can be
+                            // passed directly to `verifyPhoneNumber`.
+                            try {
+                                const phoneProvider = new firebase.auth.PhoneAuthProvider();
+                                const verificationId = await phoneProvider.verifyPhoneNumber(
+                                    phoneNumber,
+                                    recaptchaVerifier.current
+                                );
+                                setVerificationId(verificationId);
+                                showMessage({
+                                    text: "Verification code has been sent to your phone.",
 
 
-                            });
-                            setButton(false);
-                        } catch (err) {
-                            showMessage({ text: `Error: ${err.message}`, color: "red" });
+                                });
+                                setButton(false);
+                            } catch (err) {
+                                showMessage({ text: `Error: ${err.message}`, color: "red" });
 
-                        }
-                    }}>
+                            }
+                        }}>
                         <View style={styles.button}>
                             <Text style={styles.buttonText}>
                                 Send verification Code
@@ -96,9 +98,15 @@ export default function MainScreen(props) {
                                                   verificationId,
                                                   verificationCode
                                               );
-                                              await firebase.auth().signInWithCredential(credential);
+                                           const response =  await firebase.auth().signInWithCredential(credential);
+
+                                           if(response){
+                                              signIn(response.user)
+
+                                           }
+
                                               showMessage({ text: "Phone authentication successful 👍" });
-                                               redirectToUserFeed();
+
                                           } catch (err) {
                                               showMessage({ text: `Error: ${err.message}`, color: "red" });
                                           }
@@ -127,6 +135,14 @@ export default function MainScreen(props) {
         </View>
     );
 }
+const mapDispatchToprops = dispatch =>{
+    return{
+        signIn: user => dispatch({type:'SIGN_IN', payload:user})
+
+    }
+
+}
+export default connect(null, mapDispatchToprops) (MainScreen);
 
 
 const styles = StyleSheet.create({
