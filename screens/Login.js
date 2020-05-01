@@ -3,13 +3,17 @@ import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import * as Font from 'expo-font';
 import CustomButton from "../components/customButtons/customButtons";
+import {connect} from 'react-redux';
 
 class Login extends React.Component{
+
+
 
     constructor(){
         super()
         this.state={
             fontLoaded: false
+
         }
     }
 
@@ -50,8 +54,9 @@ class Login extends React.Component{
 
 
 
-
 }
+
+
 export default Login;
 const styles = StyleSheet.create({
     container: {
