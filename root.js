@@ -11,12 +11,16 @@ import {createDrawerNavigator, DrawerItem} from "@react-navigation/drawer"
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {FIREBASE_CONFIG} from "./config/config";
 import {connect} from 'react-redux';
+import CustomDrawerNavigator from "./components/customDrawerComponent/CustomDrawerComponent";
 import Settings from "./screens/mainScreen/Settings";
 import Notification from "./screens/mainScreen/Notification";
 import SplashScreen from "./screens/SplashScreen";
 import MyProfile from "./screens/mainScreen/MyProfile";
 import * as Font from "expo-font";
 import Friends from "./screens/mainScreen/Friends";
+import { Ionicons } from '@expo/vector-icons';
+import CustomDrawerComponent from "./components/customDrawerComponent/CustomDrawerComponent";
+import HotTopics from "./screens/mainScreen/HotTopics";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tabs = createBottomTabNavigator();
@@ -119,16 +123,78 @@ const mapDispatchToprops = dispatch =>{
 
 
 const HomeTabNavigator = () => (
-    <Tabs.Navigator>
-        <Tabs.Screen name="UserFeed" component={UserFeed} />
+    <Tabs.Navigator
+
+        screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+
+                if (route.name === 'Home') {
+                    iconName = focused
+                        ? 'ios-home'
+                        : 'ios-arrow-round-back';
+                } else if (route.name === 'Settings') {
+                    iconName = focused ? 'ios-list-box' : 'ios-list';
+                } else if (route.name === 'Notification') {
+                    iconName = focused ? 'md-notifications' : 'ios-notifications-outline';
+                }
+                else if (route.name === 'HotTopics') {
+                    iconName = focused ? 'md-heart' : 'md-heart-empty';
+                }
+
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={size} color={color} />;
+            },
+        })}
+
+        tabBarOptions={{
+            activeTintColor: 'tomato',
+            inactiveTintColor: 'gray',
+        }}
+    >
+        <Tabs.Screen  name="Home" component={UserFeed} />
         <Tabs.Screen name="Notification" component={Notification} />
-        <Tabs.Screen name="Friends" component={Friends} />
+        <Tabs.Screen name="HotTopics" component={HotTopics} />
+        <Tabs.Screen name="Settings" component={Settings} />
     </Tabs.Navigator>
 )
 
+const getHeaderTitle = route =>{
+    const routName = route.state ?  route.state.routes[route.state.index].name : 'Home'
+
+    switch (routName) {
+        case "Home":
+            return "Home"
+        case "Notification":
+            return "Notification"
+        case "Friends":
+            return "Friends"
+        case "Settings":
+            return "Settings"
+        case "HotTopics":
+            return "HotTopics"
+    }
+}
+const HomeStackNavigator = ({navigation}) => (
+    <Stack.Navigator screenOptions={{
+        headerLeft:() => (
+            <Ionicons onPress={() => navigation.openDrawer()} name="ios-menu" size={30} color="green" style={{marginLeft:10}} color='black' />
+
+        )
+    }}>
+        <Stack.Screen
+            options={({route}) => ({
+                title:getHeaderTitle(route)
+            })}
+            name="HomeTabNavigator" component={HomeTabNavigator}/>
+    </Stack.Navigator>
+)
+
 const AppDrawerNavigator = () => (
-    <Drawer.Navigator>
-        <Drawer.Screen name="UserFeed" component={HomeTabNavigator} />
+    <Drawer.Navigator
+    drawerContent={props => <CustomDrawerComponent{...props}/>}
+    >
+        <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-home" size={24} />}} name="Home" component={HomeStackNavigator} />
         <Drawer.Screen name="MyProfile" component={MyProfile} />
 
 
