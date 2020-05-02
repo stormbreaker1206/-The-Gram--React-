@@ -12,6 +12,7 @@ const MainScreen = ({signIn}) => {
     const [message, showMessage] = React.useState(null);
     const recaptchaVerifier = React.useRef(null);
     const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
+    const isMountedRef = React.useRef(null);
 
 
     return (
@@ -42,19 +43,26 @@ const MainScreen = ({signIn}) => {
                             // The FirebaseRecaptchaVerifierModal ref implements the
                             // FirebaseAuthApplicationVerifier interface and can be
                             // passed directly to `verifyPhoneNumber`.
+
                             try {
-                                const phoneProvider = new firebase.auth.PhoneAuthProvider();
-                                const verificationId = await phoneProvider.verifyPhoneNumber(
-                                    phoneNumber,
-                                    recaptchaVerifier.current
-                                );
-                                setVerificationId(verificationId);
+
+
+                                    const phoneProvider = new firebase.auth.PhoneAuthProvider();
+                                    const verificationId = await phoneProvider.verifyPhoneNumber(
+                                        phoneNumber,
+                                        recaptchaVerifier.current
+                                    );
+                                    setVerificationId(verificationId);
+
+
+
                                 showMessage({
                                     text: "Verification code has been sent to your phone.",
 
 
                                 });
                                 setButton(false);
+
                             } catch (err) {
                                 showMessage({ text: `Error: ${err.message}`, color: "red" });
 
@@ -93,20 +101,24 @@ const MainScreen = ({signIn}) => {
 
                     <TouchableOpacity style={{alignItems:'center'}} disabled={!verificationId}
                                       onPress={async () => {
+                                          isMountedRef.current = true;
                                           try {
                                               const credential = firebase.auth.PhoneAuthProvider.credential(
                                                   verificationId,
                                                   verificationCode
                                               );
+
+
                                            const response =  await firebase.auth().signInWithCredential(credential);
 
                                            if(response){
-                                              signIn(response.user)
-
+                                               if(isMountedRef.current) {
+                                                   signIn(response.user)
+                                               }
                                            }
 
                                               showMessage({ text: "Phone authentication successful 👍" });
-
+                                              return () => isMountedRef.current = false;
                                           } catch (err) {
                                               showMessage({ text: `Error: ${err.message}`, color: "red" });
                                           }

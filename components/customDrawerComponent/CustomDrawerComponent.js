@@ -15,7 +15,7 @@ class CustomDrawerNavigator extends Component {
   render() {
     return (
       <ScrollView>
-        <SafeAreaView />
+        <SafeAreaView>
         <View
           style={{
             height: 150,
@@ -30,6 +30,8 @@ class CustomDrawerNavigator extends Component {
           </Text>
         </View>
         <DrawerItemList {...this.props} />
+        </SafeAreaView>
+
       </ScrollView>
     );
   }
