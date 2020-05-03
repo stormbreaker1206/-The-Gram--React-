@@ -2,7 +2,9 @@ import React from "react";
 import { Text, View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
+import {getCurrentTime, randomName} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
+import {Button} from "react-native-paper";
 
 const MainScreen = ({signIn}) => {
     const [phoneNumber, setPhoneNumber] = React.useState();
@@ -12,8 +14,17 @@ const MainScreen = ({signIn}) => {
     const [message, showMessage] = React.useState(null);
     const recaptchaVerifier = React.useRef(null);
     const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
-    const isMountedRef = React.useRef(null);
+    const isMountedRef = React.useRef(false);
+    const time = ()=>{
+        alert(getCurrentTime())
+        let time = getCurrentTime();
+        let r = time.toString()
+      //  console.log(getCurrentTime().toString())
+      //  console.log(r)
+      //  console.log(new Date('Sun May 03 2020 10:47:15 GMT-0500 '))
 
+
+    }
 
     return (
         <View style={{ padding: 10, marginTop: 10 }}>
@@ -22,7 +33,8 @@ const MainScreen = ({signIn}) => {
                 firebaseConfig={firebaseConfig}
             />
 
-            {showButton ? (
+            {
+                showButton ? (
                 <View>
                     <Text style={styles.headerText}>What's your phone number?</Text>
 
@@ -43,6 +55,7 @@ const MainScreen = ({signIn}) => {
                             // The FirebaseRecaptchaVerifierModal ref implements the
                             // FirebaseAuthApplicationVerifier interface and can be
                             // passed directly to `verifyPhoneNumber`.
+                            isMountedRef.current = true;
 
                             try {
 
@@ -52,8 +65,9 @@ const MainScreen = ({signIn}) => {
                                         phoneNumber,
                                         recaptchaVerifier.current
                                     );
+                                if(isMountedRef.current) {
                                     setVerificationId(verificationId);
-
+                                }
 
 
                                 showMessage({
@@ -62,7 +76,7 @@ const MainScreen = ({signIn}) => {
 
                                 });
                                 setButton(false);
-
+                                return () => isMountedRef.current = false;
                             } catch (err) {
                                 showMessage({ text: `Error: ${err.message}`, color: "red" });
 
@@ -72,6 +86,7 @@ const MainScreen = ({signIn}) => {
                             <Text style={styles.buttonText}>
                                 Send verification Code
                             </Text>
+
                         </View>
                     </TouchableOpacity>
 
@@ -112,9 +127,32 @@ const MainScreen = ({signIn}) => {
                                            const response =  await firebase.auth().signInWithCredential(credential);
 
                                            if(response){
-                                               if(isMountedRef.current) {
-                                                   signIn(response.user)
-                                               }
+
+                                                   //check if user already exist
+                                                   const snapshot = await firebase
+                                                       .database()
+                                                       .ref('users/')
+                                                       .child(response.user.uid)
+                                                       .orderByChild('phone')
+                                                       .equalTo(phoneNumber.toString())
+                                                       .once('value');
+                                                   if(snapshot.exists()){
+                                                       //sign in if exist
+                                                       if(isMountedRef.current) {
+                                                           signIn(response.user)
+                                                       }
+                                                   }else {
+                                                       //store information in the database and sign in
+                                                       const user = await firebase.database().ref('users/')
+                                                           .child(response.user.uid).set({datJoined:getCurrentTime().toString(),
+                                                               encrypted:randomName(5), handle:randomName(6),
+                                                               id:response.user.uid,phone:phoneNumber})
+                                                       if(isMountedRef.current) {
+                                                           signIn(response.user)
+                                                       }
+                                                   }
+
+
                                            }
 
                                               showMessage({ text: "Phone authentication successful 👍" });

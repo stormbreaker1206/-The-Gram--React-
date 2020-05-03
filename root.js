@@ -21,6 +21,8 @@ import Friends from "./screens/mainScreen/Friends";
 import { Ionicons } from '@expo/vector-icons';
 import CustomDrawerComponent from "./components/customDrawerComponent/CustomDrawerComponent";
 import HotTopics from "./screens/mainScreen/HotTopics";
+import Messages from "./screens/mainScreen/Messages";
+import Post from "./screens/mainScreen/Post";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tabs = createBottomTabNavigator();
@@ -141,6 +143,9 @@ const HomeTabNavigator = () => (
                 else if (route.name === 'HotTopics') {
                     iconName = focused ? 'md-heart' : 'md-heart-empty';
                 }
+                else if (route.name === 'Post') {
+                    iconName = focused ? 'ios-add-circle' : 'ios-add-circle-outline';
+                }
 
                 // You can return any component that you like here!
                 return <Ionicons name={iconName} size={size} color={color} />;
@@ -154,6 +159,7 @@ const HomeTabNavigator = () => (
     >
         <Tabs.Screen  name="Home" component={UserFeed} />
         <Tabs.Screen name="Notification" component={Notification} />
+        <Tabs.Screen name="Post" component={Post} />
         <Tabs.Screen name="HotTopics" component={HotTopics} />
         <Tabs.Screen name="Settings" component={Settings} />
     </Tabs.Navigator>
@@ -173,6 +179,8 @@ const getHeaderTitle = route =>{
             return "Settings"
         case "HotTopics":
             return "HotTopics"
+        case "Post":
+            return "Post"
     }
 }
 const HomeStackNavigator = ({navigation}) => (
@@ -195,8 +203,9 @@ const AppDrawerNavigator = () => (
     drawerContent={props => <CustomDrawerComponent{...props}/>}
     >
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-home" size={24} />}} name="Home" component={HomeStackNavigator} />
-        <Drawer.Screen name="MyProfile" component={MyProfile} />
-
+        <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-contact" size={24} />}} name="My Profile" component={MyProfile} />
+        <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} />
+        <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-contacts" size={24} />}} name="Friends" component={Friends}/>
 
     </Drawer.Navigator>
 );

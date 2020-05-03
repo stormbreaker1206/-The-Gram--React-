@@ -5,7 +5,7 @@ class Friends extends React.Component{
         return(
             <View style={style.container}>
                 <Text>
-                    User Feed
+                    Friends
                 </Text>
             </View>
         )
