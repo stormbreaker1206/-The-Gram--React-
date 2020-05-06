@@ -180,7 +180,7 @@ const getHeaderTitle = route =>{
         case "HotTopics":
             return "HotTopics"
         case "Post":
-            return "Post"
+            return ""
     }
 }
 const HomeStackNavigator = ({navigation}) => (
@@ -203,7 +203,7 @@ const AppDrawerNavigator = () => (
     drawerContent={props => <CustomDrawerComponent{...props}/>}
     >
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-home" size={24} />}} name="Home" component={HomeStackNavigator} />
-        <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-contact" size={24} />}} name="My Profile" component={MyProfile} />
+        <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-contact" size={24} />}} name="MyProfile" component={MyProfile} />
         <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} />
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons name="ios-contacts" size={24} />}} name="Friends" component={Friends}/>
 
