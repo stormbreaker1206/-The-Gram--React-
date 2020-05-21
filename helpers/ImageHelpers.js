@@ -1,6 +1,7 @@
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
-import { Platform } from 'react-native';
+import { Platform } from 'react-native'
+import {Camera} from "expo-camera";
 import {CAMERA_ROLL} from "expo-permissions";
 
 export const openImageLibrary = async () => {
@@ -20,10 +21,23 @@ export const openImageLibrary = async () => {
   }
 };
 
+export const startRecording = async (cameraRef)=>{
+
+  const { status } = await Camera.requestPermissionsAsync()
+  if (status !== 'granted') {
+    alert('Sorry, we need camera permission');
+    return false;
+  }else {
+   const result = await cameraRef.recordAsync()
+    return !result.cancelled ? result : false;
+  }
+  }
+
 export const openCamera = async () => {
   const { status } = await Permissions.askAsync(
     Permissions.CAMERA_ROLL,
-    Permissions.CAMERA
+    Permissions.CAMERA,
+      Permissions.AUDIO_RECORDING
   );
 
   if (status !== 'granted') {

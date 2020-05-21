@@ -15,6 +15,25 @@ export const getCurrentTime = ()=>{
 
     return time;
 }
+export const checkLikes = (item, id) =>{
+    let likes = [];
+    
+    if (item.hasOwnProperty('likes')) {
+        Object.keys(item["likes"]).forEach(function(key) {
+            like = item["likes"][key].userId;
+
+            if(like === id){
+                likes.push(like)
+            }
+
+            
+         });
+    }
+   
+ 
+    
+    return likes;
+}
 
 export const hoursAgo = date => {
     let seconds = Math.floor((new Date() - date) / 1000);

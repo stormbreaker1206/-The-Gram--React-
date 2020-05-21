@@ -1,37 +1,50 @@
 import React, { Component } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    SafeAreaView,
-    Platform
-} from 'react-native';
-import {
-    Avatar,
-    Title,
-    Drawer,
-    Caption,
-    Paragraph,
- } from 'react-native-paper';
-import {
-    DrawerContentScrollView,
-    DrawerItem
-} from '@react-navigation/drawer';
+import {View, Text, StyleSheet,ScrollView, SafeAreaView,  Platform} from 'react-native';
+import {Avatar, Title,Drawer, Caption, Paragraph,} from 'react-native-paper';
+import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 //import { DrawerItems } from 'react-navigation';
 import {DrawerItemList} from "@react-navigation/drawer";
 import {connect} from 'react-redux';
 import * as firebase from "firebase";
 class CustomDrawerComponent extends Component {
-    constructor(props) {
-        super(props);
+
+    state = {
+        results: {},
+       
+        
     }
+
+
+
+
+    componentDidMount() {
+        this.getUserData()
+
+       // this.setState({image: this.props.auth.currentUserData.image}, ()=>console.log(results) )
+        
+    }
+
+    getUserData = async () => {
+        try {
+            const id = this.props.auth.currentUser.uid;
+            const currentUser = await  firebase.database().ref('users')
+                .child(id).on('value', (snapshot)=>{
+                    this.setState({results: snapshot.val()})
+                })
+        }catch (e) {
+            console.log(e)
+        }
+
+
+    }
+
+
 
     signOut = async () => {
         try {
             await firebase.auth().signOut();
-            this.props.signOut()
+            await this.props.signOut()
 
         } catch (error) {
             alert('Unable to sign out right now');
@@ -39,21 +52,22 @@ class CustomDrawerComponent extends Component {
     };
     render() {
         return (
-           
+
             <View style={{flex:1}}>
-            <DrawerContentScrollView >
+            <DrawerContentScrollView {...this.props} >
                 <View style={styles.drawerContent}>
                     <View style={styles.userInfoSection}>
                         <View style={{flexDirection:'row',marginTop: 15}}>
-                            <Avatar.Image
-                                source={{
-                                    uri: 'https://www.goodmorningimagesdownload.com/wp-content/uploads/2019/10/Nice-Whatsapp-Dp-Profile-Images-101-300x300.jpg'
-                                }}
-                                size={50}
-                            />
+
+                        {this.state.results.image ? (
+                        <Avatar.Image source={{uri: this.state.results.image }} style={styles.avatar}  size={50}/>
+                    ): (
+                    <Avatar.Image source={require('../../assets/white-bg.jpg')} style={styles.avatar}  size={50}/>
+                    )}
+                          
                             <View style={{marginLeft:15, flexDirection:'column'}}>
-                                <Title style={styles.title}>John Doe</Title>
-                                <Caption style={styles.caption}>@j_doe</Caption>
+                                <Title style={styles.title}>{this.state.results.handle}</Title>
+                                <Caption style={styles.caption}></Caption>
                             </View>
                         </View>
 
@@ -79,15 +93,23 @@ class CustomDrawerComponent extends Component {
                 <Drawer.Section style={styles.bottomDrawerSection}>
                     <DrawerItem
                         icon={({color, size}) => (
-                            <Ionicons name="ios-exit" size={24} />
+                            <Ionicons color='black' name="ios-exit" size={24} />
                         )}
                         label="Sign Out"
+                        labelStyle={{fontFamily: 'OldStandardTT-Regular'}}
+
                         onPress={this.signOut}
                     />
                 </Drawer.Section>
             </View>
 
         );
+    }
+}
+
+const mapStateToProps = state => {
+    return{
+        auth:state.auth
     }
 }
 
@@ -100,7 +122,7 @@ const mapDispatchToprops = dispatch =>{
 }
 
 
-export default connect(null, mapDispatchToprops) (CustomDrawerComponent);
+export default connect(mapStateToProps, mapDispatchToprops) (CustomDrawerComponent);
 
 const styles = StyleSheet.create({
 
@@ -114,10 +136,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 3,
         fontWeight: 'bold',
+        fontFamily: 'OldStandardTT-Regular'
     },
     caption: {
         fontSize: 14,
         lineHeight: 14,
+        fontFamily: 'OldStandardTT-Regular'
     },
     row: {
         marginTop: 20,
@@ -130,8 +154,9 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     paragraph: {
-        fontWeight: 'bold',
+
         marginRight: 3,
+        fontFamily: 'OldStandardTT-Regular'
     },
     bottomDrawerSection: {
 

@@ -1,7 +1,8 @@
 const initialState = {
     isLoading: true,
     isSignedIn: false,
-    currentUser: null
+    currentUser: null,
+    currentUserData: null
 }
 
 const auth = (state = initialState, action) => {
@@ -19,7 +20,13 @@ const auth = (state = initialState, action) => {
                 ...state,
                 isSignedIn: false,
                 currentUser: null,
-                isLoading: false
+                isLoading: false,
+                currentUserData: null
+            }
+        case "GET_USER_DATA":
+            return {
+                ...state,
+                currentUserData: action.payload
             }
         default:
             return state

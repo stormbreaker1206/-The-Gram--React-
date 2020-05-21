@@ -6,7 +6,7 @@ import {getCurrentTime, randomName} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
 import {Button} from "react-native-paper";
 
-const MainScreen = ({signIn}) => {
+const MainScreen = ({signIn, GetCurrentData}) => {
     const [phoneNumber, setPhoneNumber] = React.useState();
     const [verificationId, setVerificationId] = React.useState();
     const [verificationCode, setVerificationCode] = React.useState();
@@ -128,6 +128,8 @@ const MainScreen = ({signIn}) => {
 
                                            if(response){
 
+                                               if(isMountedRef.current) {
+
                                                    //check if user already exist
                                                    const snapshot = await firebase
                                                        .database()
@@ -135,23 +137,25 @@ const MainScreen = ({signIn}) => {
                                                        .child(response.user.uid)
                                                        .orderByChild('phone')
                                                        .equalTo(phoneNumber.toString())
-                                                       .once('value');
-                                                   if(snapshot.exists()){
-                                                       //sign in if exist
-                                                       if(isMountedRef.current) {
-                                                           signIn(response.user)
-                                                       }
-                                                   }else {
-                                                       //store information in the database and sign in
-                                                       const user = await firebase.database().ref('users/')
-                                                           .child(response.user.uid).set({datJoined:getCurrentTime().toString(),
-                                                               encrypted:randomName(5), handle:randomName(6),
-                                                               id:response.user.uid,phone:phoneNumber})
-                                                       if(isMountedRef.current) {
-                                                           signIn(response.user)
-                                                       }
-                                                   }
+                                                       .once('value').then((res) =>{
 
+                                                           if(res){
+                                                               //sign in if exist
+                                                               signIn(response.user)
+                                                           }else {
+
+                                                               //store information in the database and sign in
+                                                               const user =  firebase.database().ref('users/')
+                                                                   .child(response.user.uid).set({datJoined:getCurrentTime().toString(),
+                                                                       encrypted:randomName(5), handle:randomName(6),
+                                                                       id:response.user.uid,phone:phoneNumber})
+
+                                                               signIn(response.user)
+
+                                                           }
+                                                       });
+
+                                               }
 
                                            }
 
@@ -187,7 +191,8 @@ const MainScreen = ({signIn}) => {
 }
 const mapDispatchToprops = dispatch =>{
     return{
-        signIn: user => dispatch({type:'SIGN_IN', payload:user})
+        signIn: user => dispatch({type:'SIGN_IN', payload:user}),
+        GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data})
 
     }
 

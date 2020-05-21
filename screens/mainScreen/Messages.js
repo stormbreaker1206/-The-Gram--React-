@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
-import CustomButton from "../../components/customButtons/customButtons";
+import {StyleSheet, StatusBar, Text, View, TextInput, Image, ActivityIndicator, TouchableOpacity, TouchableHighlight} from 'react-native';
+import {Ionicons} from "@expo/vector-icons";
+import Header from "../../components/customHeader/Header";
 
 const Messages = (props)=> {
 
@@ -9,18 +10,17 @@ const Messages = (props)=> {
     }
 
     return(
-        <View style={style.container}>
-            <CustomButton text='Logout Out' onPress={Redirect} />
-        </View>
+       <Header onPress={Redirect} name='create' text='Messaging'/>
     )
 }
 
 export default Messages
 
 const style = StyleSheet.create({
-    container:{
-        flex:1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
+   header:{
+      height: 60,
+       flexDirection:'row',
+       justifyContent:'space-between'
+
+   }
 })
