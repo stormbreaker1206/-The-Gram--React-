@@ -1,5 +1,4 @@
 import * as firebase from "firebase";
-
 export const snapshotToArray = snapshot => {
   let returnArr = [];
   
@@ -15,6 +14,51 @@ export const snapshotToArray = snapshot => {
   return returnArr;
  
 };
+
+export const getName = async  (id) =>{
+    if(id === null || id === undefined){
+
+    }else {
+        let results = '';
+        try {
+            const currentUser = await  firebase.database().ref('users')
+                .child(id).once('value', (snapshot)=>{
+                    if(snapshot.exists()) {
+                        results = snapshot
+                    }
+                })
+        }catch (e) {
+            console.log(e)
+        }
+        return results;
+    }
+
+
+}
+
+export const getUserPost = async (id) =>{
+    let results = []
+    try {
+        const posts = await firebase
+            .database()
+            .ref('posts').orderByChild('id').equalTo(id);
+             posts.on('value',  (snapshot) => {
+
+            snapshot.forEach(child => {
+                let item = child.val();
+                item.key = child.key;
+                results.push(item);
+
+
+            });
+
+
+        });
+    }catch (e) {
+        console.log(e)
+    }
+    return results;
+}
 
 export const updateLike = async (item, id) =>{
  

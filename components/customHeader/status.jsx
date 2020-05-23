@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         marginHorizontal: 16,
         borderRadius: 16,
-        marginTop: -35
+        marginTop: 25
     },
     text:{
         color:'white'

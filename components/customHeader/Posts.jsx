@@ -31,7 +31,7 @@ import UserPost from '../PostComponent/UserPost';
                 .ref('posts').orderByChild('id').equalTo(id);
                 posts.on('value',  (snapshot) => {
                     const postArray = snapshotToArray(snapshot)
-                    this.setState({postArray: postArray})
+                    this.setState({postArray: postArray.reverse()})
                  
 
                 });

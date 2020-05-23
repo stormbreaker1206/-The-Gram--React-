@@ -20,7 +20,7 @@ export const checkLikes = (item, id) =>{
     
     if (item.hasOwnProperty('likes')) {
         Object.keys(item["likes"]).forEach(function(key) {
-            like = item["likes"][key].userId;
+            let like = item["likes"][key].userId;
 
             if(like === id){
                 likes.push(like)

@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, StatusBar, Text, View, TextInput, ScrollView, Image, ActivityIndicator, TouchableOpacity, TouchableHighlight} from 'react-native';
+import {StyleSheet, StatusBar, Text, View, Dimensions, TextInput, ScrollView, Image, ActivityIndicator, TouchableOpacity, TouchableHighlight} from 'react-native';
 import {Spinner} from 'native-base'
 import {Ionicons} from "@expo/vector-icons";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -9,9 +9,14 @@ import * as firebase from "firebase";
 import 'firebase/storage';
 import Header from '../customHeader/Header';
 import {openImageLibrary, prepareBlob} from '../../helpers/ImageHelpers';
+const screenWidth = Math.round(Dimensions.get('window').width);
+
 class ProfileHeader extends React.Component{
     state={
         isLoading: false,
+        screen: screenWidth,
+        right: false
+
         
     }
 
@@ -63,7 +68,7 @@ class ProfileHeader extends React.Component{
             
             <View style={{padding:5}}>
                 
-            <Header onPress={this.props.onPress} text='My Profile' name='account-circle'/>
+            <Header onPress={this.props.onPress} text={JSON.parse(JSON.stringify(this.props.auth.currentUserData.handle))} name='account-circle'/>
                 <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
          
        
@@ -94,10 +99,6 @@ class ProfileHeader extends React.Component{
                    
                 </View>
 
-                <View style={{justifyContent:'center', alignItems:'center', marginVertical: 12, paddingBottom:20}}>
-                    <Text style={styles.text}>{this.props.auth.currentUserData.handle}</Text>
-                   
-                </View>
 
             </View>
 
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         position: 'absolute',
         zIndex: 1,
-        right: 110,
+        right: 125,
         bottom: 16
          
         

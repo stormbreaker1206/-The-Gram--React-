@@ -5,12 +5,11 @@ import moment from "moment";
 import {Video} from "expo-av";
 import {connect} from 'react-redux';
 import ImageModalView from "../ImageModalComponent/ImageModalView";
-import ProfileImageModal from '../ProfileImageModal/ProfileImageModal';
 import {checkLikes} from "../../helpers/userUtilis";
 import {updateLike} from "../../helpers/firebaseHelpers";
 import { compose } from 'redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-
+import {getName, getUserPost} from '../../helpers/firebaseHelpers';
 
 class PostComponent extends React.Component{
     constructor(props){
@@ -26,7 +25,10 @@ class PostComponent extends React.Component{
                 likedCColor: 'black',
                 uid: null,
                 playVideo: true,
-                viewProifle: false
+                postId: null
+
+
+
         
         }
 
@@ -80,8 +82,7 @@ class PostComponent extends React.Component{
   
    
     openImageModal = async (item) => {
- 
-             
+
        await this.setState({selectedItem: item})
         const open = this.state.isVisible
         if(this.state.isVisible){
@@ -91,21 +92,29 @@ class PostComponent extends React.Component{
         }
     }
 
-     viewProifle = () => {
-              
-   
-        const open = this.state.viewProifle
-        if(this.state.viewProifle){
-            this.setState({viewProifle: !open})
+
+    viewProfile =  async (id) => {
+
+
+        if(this.state.uid === id){
+
+            this.props.navigation.navigate('MyProfile')
         }else {
-            this.setState({viewProifle: !open})
+            await getName(id).then(response =>{
+
+                this.props.userPostData(response.val())
+            });
+            await getUserPost(id).then(res=>{
+
+                this.props.userPost(res)
+            })
+
+             this.props.navigation.navigate('UserProfile')
         }
     }
 
     renderPost = ({item}) => {
 
-    
-           
 
         const userlike = checkLikes(item, this.state.uid);
         let userLikedPost = '';
@@ -124,18 +133,14 @@ class PostComponent extends React.Component{
 
           return (
 
-            
-              
-            <View style={styles.feedItem}>
 
-                 <ProfileImageModal onPress={this.viewProifle} viewProifle={this.state.viewProifle}/>
-                
-                <ImageModalView isVisible={this.state.isVisible} userLikedPost={userLikedPost} selectedItem={this.state.selectedItem} onPress={this.openImageModal}/>
+        <View style={styles.feedItem}>
+              <ImageModalView isVisible={this.state.isVisible} userLikedPost={userLikedPost} selectedItem={this.state.selectedItem} onPress={this.openImageModal}/>
               <View>
 
                 <View style={{ flex: 1 }}>
 
-                    <TouchableOpacity onPress={this.viewProifle}>
+                    <TouchableOpacity onPress={()=>this.viewProfile(item.id)}>
 
                     <View style= {{flexDirection: "row", alignItems: "center" }}>
                     <Image source={{uri: item.proPic}} style={styles.avatar} />
@@ -150,7 +155,7 @@ class PostComponent extends React.Component{
                         <TouchableOpacity onPress={this.settings}>
                         <Ionicons name="ios-more" size={24} color="#73788B" />
                         </TouchableOpacity>
-                        
+
                     </View>
                     {item.type === "text" ? (
                         <Text style={styles.post}>{item.status}</Text>
@@ -159,10 +164,10 @@ class PostComponent extends React.Component{
                         <View>
                             <Text style={styles.post}>{item.status}</Text>
                             {item.type === "video" ? (
-                               
-                             
+
+
                                 <Video
-                                   
+
                                     source={item.image ? {uri: item.image } : null}
                                     posterSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
                                     rate={1.0}
@@ -175,7 +180,7 @@ class PostComponent extends React.Component{
                                     style={{ height: 300,  borderRadius: 5,
                                     marginVertical: 16, alignItems:'center' }}
                                 />
-                                
+
                             ): (
                                 <TouchableOpacity onPress={() =>this.openImageModal(item)}>
                                <Image loadingIndicatorSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
@@ -194,12 +199,12 @@ class PostComponent extends React.Component{
                         </TouchableOpacity>
                         <Text style={[styles.text, {color:'black', alignItems:'center'}]}>16</Text>
                         <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
-                        
+
                         <View style={{ flexDirection: "row", flex:1, paddingLeft: 8, justifyContent:'space-evenly', alignItems:'center' }}>
-                            
+
                             <Text style={styles.text}>16 Rumour</Text>
                             <Text style={styles.text}>1 Authentic</Text>
-                            
+
                         </View>
                     </View>
                     </View>
@@ -215,7 +220,7 @@ class PostComponent extends React.Component{
 
                 <FlatList
 
-                    data={this.props.data.reverse()}
+                    data={this.props.auth.postData}
                     renderItem={this.renderPost}
                     keyExtractor={post => post.key}
                     showsVerticalScrollIndicator={false}
@@ -225,16 +230,22 @@ class PostComponent extends React.Component{
     }
 }
 
+const mapDispatchToprops = dispatch =>{
+    return{
+        userPostData: data => dispatch({type:'GET_USER_POST_ID', payload:data}),
+        userPost: data => dispatch({type:'GET_POST', payload:data})
+
+    }
+
+}
+
 const mapStateToProps = state => {
     return{
         auth:state.auth
     }
 }
 const wrapper = compose(
-    connect(
-      mapStateToProps
-   
-    ),
+    connect(mapStateToProps,mapDispatchToprops),
     connectActionSheet
   );
 

@@ -11,7 +11,6 @@ import {createDrawerNavigator, DrawerItem} from "@react-navigation/drawer"
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {FIREBASE_CONFIG} from "./config/config";
 import {connect} from 'react-redux';
-import CustomDrawerNavigator from "./components/customDrawerComponent/CustomDrawerComponent";
 import Settings from "./screens/mainScreen/Settings";
 import Notification from "./screens/mainScreen/Notification";
 import SplashScreen from "./screens/SplashScreen";
@@ -19,12 +18,22 @@ import MyProfile from "./screens/mainScreen/MyProfile";
 import * as Font from "expo-font";
 import Friends from "./screens/mainScreen/Friends";
 import { Ionicons } from '@expo/vector-icons';
-import {MaterialIcons} from "@expo/vector-icons";
 import CustomDrawerComponent from "./components/customDrawerComponent/CustomDrawerComponent";
 import HotTopics from "./screens/mainScreen/HotTopics";
 import Messages from "./screens/mainScreen/Messages";
 import Post from "./screens/mainScreen/Post";
 import Modal from "./screens/mainScreen/Modal";
+import { YellowBox } from 'react-native';
+import _ from 'lodash';
+import UserProfile from "./screens/mainScreen/UserProfile";
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+    if (message.indexOf('Setting a timer') <= -1) {
+        _console.warn(message);
+    }
+};
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tabs = createBottomTabNavigator();
@@ -247,6 +256,7 @@ const HomeStackNavigator = ({navigation}) => (
             })}
             name="HomeTabNavigator" component={HomeTabNavigator}/>
             <Stack.Screen name="modal" options={{ title: '' }} component={Modal}/>
+
             
     </Stack.Navigator>
 )
@@ -268,6 +278,12 @@ const AppDrawerNavigator = () => (
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-contact" size={24} />}} name="MyProfile" component={MyProfile} />
         <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons color='black' name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} />
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-contacts" size={24} />}} name="Friends"  component={Friends}/>
+        <Drawer.Screen  options={{
+            drawerLabel: () => null,
+            title: null,
+            drawerIcon: () => null,
+
+        }} name="UserProfile" component={UserProfile}/>
 
     </Drawer.Navigator>
 );

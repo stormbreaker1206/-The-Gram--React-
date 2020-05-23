@@ -100,6 +100,7 @@ class CustomDrawerComponent extends Component {
 
                         onPress={this.signOut}
                     />
+
                 </Drawer.Section>
             </View>
 

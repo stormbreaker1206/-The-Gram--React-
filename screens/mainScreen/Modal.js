@@ -396,11 +396,11 @@ class ModalView extends React.Component{
                                 <Container style={{flex:1 }}>
                                     <Header androidStatusBarColor="#000000" style={{ backgroundColor: "white"}}>
                                         <Left>
-                                            <TouchableHighlight
+                                            <TouchableOpacity
                                                 onPress={this.Redirect}
                                             >
                                                 <Ionicons color='black' style={{paddingLeft:10}} name="ios-arrow-back" size={24} />
-                                            </TouchableHighlight>
+                                            </TouchableOpacity>
                                         </Left>
                                         <Body>
                                             <Text style={{fontFamily: 'OldStandardTT-italic',
@@ -417,9 +417,9 @@ class ModalView extends React.Component{
 
                                         <View style ={styles.container}>
 
-                                            <Image source={{uri:'https://media1.popsugar-assets.com/files/thumbor/clRf9KgfU0gfeTvymRwWzrDwJ0w/fit-in/500x500/filters:format_auto-!!-:strip_icc-!!-/2013/01/01/5/192/1922398/b578254fe6d36c92_Usher_Raymond/i/Usher.jpg'}} style={styles.avatar}></Image>
+                                            <Image source={{uri: this.props.auth.currentUserData.image}} style={styles.avatar}></Image>
 
-                                            <Text style={[styles.text, { fontWeight: "200", fontSize: 24 }]}>{this.props.auth.currentUserData.handle}</Text>
+                                            <Text style={[styles.text, { fontWeight: "200", fontSize: 20 }]}>{this.props.auth.currentUserData.handle}</Text>
 
                                         </View>
 

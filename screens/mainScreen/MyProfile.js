@@ -1,19 +1,24 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions, ScrollView } from "react-native";
 import ProfileHeader from '../../components/customHeader/ProfileHeader';
-const { height } = Dimensions.get('window');
 import Status from '../../components/customHeader/status';
 import Posts from '../../components/customHeader/Posts';
-
-//let postUserId = this.props.route.params.id;
+//const { height } = Dimensions.get('window');
+const screenWidth = Math.round(Dimensions.get('window').width);
 class MyProfile extends React.Component{
+    state={
+        width : screenWidth
+    }
+   // componentDidMount() {
+   //     this.setState({postUserId: this.props.route.params.id})
+   // }
 
-    
+
     Redirect = ()=> {
        this.props.navigation.navigate('Home')
     }
     render() {
-      
+
        
         
         return(

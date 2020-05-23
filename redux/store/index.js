@@ -6,6 +6,7 @@ import userData from "../reducers/userDataReducer";
 const Store = createStore(
     combineReducers({
         auth: Auth
+
      
     })
 )

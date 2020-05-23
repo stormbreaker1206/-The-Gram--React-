@@ -62,9 +62,13 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
 
                     <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
                 </View>
-                <TouchableOpacity onPress={settings}>
-                <Ionicons name="ios-more" size={24} color="#73788B" />
-                </TouchableOpacity>
+                {auth.currentUser.uid === item.id ?(
+                    <TouchableOpacity onPress={settings}>
+                        <Ionicons name="ios-more" size={24} color="#73788B" />
+                    </TouchableOpacity>
+                ) : null}
+
+
             </View>
             {item.type === "text" ? (
                 <Text style={styles.post}>{item.status}</Text>

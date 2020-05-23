@@ -8,9 +8,6 @@ import {Video} from "expo-av";
 const ImageModalView = ({ onPress, selectedItem, isVisible, userLikedPost})=> {
 
    
-const showImage = (item)=>{
-    alert(item.image)
-}
 
     return(
         <View style={styles.centeredView}>
@@ -25,14 +22,14 @@ const showImage = (item)=>{
             <View style={styles.modalView}>
             
             <View style={styles.header}>
-                <TouchableHighlight
+                <TouchableOpacity
                     onPress={onPress}
                 >
                     <Ionicons color='#73788B'  name="ios-close-circle" size={24} />
-                </TouchableHighlight>
-                <TouchableHighlight onPress={()=>showImage(selectedItem)}>
+                </TouchableOpacity>
+
                 <Ionicons name="ios-more" size={24} color="#73788B" />
-                </TouchableHighlight>
+
         </View>
     
         <View style={{flex:1}}>
@@ -66,13 +63,13 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-     // marginTop: 22
+      marginTop: 22
     },
     modalView: {
     height:700,
      width: '100%',
       //margin: 20,
-      backgroundColor: "#212a3b",
+      backgroundColor: "white",
      // borderRadius: 20,
       padding: 35,
      // alignItems: "center",
@@ -86,7 +83,7 @@ const styles = StyleSheet.create({
       elevation: 5
     },
      textStyle: {
-      color: "white",
+      color: "black",
       fontWeight: "bold",
       textAlign: "center"
     },

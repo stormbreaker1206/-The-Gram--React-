@@ -1,47 +1,38 @@
-import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Modal, Image} from 'react-native';
-import { Platform } from 'react-native';
-import {Ionicons, MaterialIcons} from "@expo/vector-icons";
-import {getName} from "../../helpers/firebaseHelpers";
-import Header from '../customHeader/Header';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, Image, TouchableOpacity, ScrollView} from 'react-native';
+import {Ionicons} from "@expo/vector-icons";
+import {connect} from 'react-redux';
+import * as firebase from "firebase";
+import {snapshotToArray} from "../../helpers/firebaseHelpers";
+import UserPost from "../../components/PostComponent/UserPost";
 
-import {Video} from "expo-av";
-import {Spinner} from "native-base";
-import Status from "../customHeader/status";
+class UserProfile extends React.Component {
 
+   Redirect = ()=> {
+        this.props.navigation.navigate('Home')
+       }
 
-const ProfileImageModal = ({ isViewProfile, selectedUser, onPress})=> {
-
-    return(
-        <View style={styles.centeredView}>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={isViewProfile}
-      
-        >
-
-          <View style={styles.centeredView}>
-
-            <View style={styles.modalView}>
+   render(){
+      return(
+        <ScrollView>
+            <View style={styles.centeredView}>
                 <TouchableOpacity
-                    onPress={onPress}
+                    onPress={this.Redirect}
                 >
-              <View style={styles.header}>
+                    <View style={styles.header}>
 
 
                         <Ionicons color='black'  name="ios-arrow-back" size={24} />
 
 
-                    <Text style={styles.textStyle}> {selectedUser} </Text>
-                    <MaterialIcons name="account-circle" size={24} color="white" />
+                        <Text style={styles.textStyle}>{this.props.auth.userPostData.handle}</Text>
+                        <Text></Text>
 
-                </View>
+                    </View>
                 </TouchableOpacity>
                 <View style={styles.imageContainer}>
-                    <Image source={require('../../assets/white-bg.jpg')} style={styles.avatar}></Image>
+                    <Image source={{uri: this.props.auth.userPostData.image }} style={styles.avatar}/>
                 </View>
-
                 <View style={styles.container}>
                     <View style={styles.statContainer}>
                         <Text style={styles.number}>12k</Text>
@@ -57,52 +48,53 @@ const ProfileImageModal = ({ isViewProfile, selectedUser, onPress})=> {
                     </View>
 
                 </View>
-
                 <View style={{flex:1, marginTop: 8}}>
                     <Text style={styles.postText}>Posts</Text>
+
+
+                    <View>
+                        {this.props.auth.post.map((posts) =>{
+                            return  (
+
+                                <UserPost item={posts} key={posts.key}/>
+
+                            );
+
+                        })}
+                    </View>
+
+
                 </View>
 
             </View>
-
-
-
-          </View>
-        </Modal>
-      
-      </View>
-    )
+        </ScrollView>
+    );
 }
 
-export default ProfileImageModal
+
+
+
+}
+
+const mapStateToProps = state => {
+    return{
+        auth:state.auth
+    }
+}
+export default connect(mapStateToProps) (UserProfile);
 
 const styles = StyleSheet.create({
     centeredView: {
-      flex: 1,
-      justifyContent: "center",
-    //  alignItems: "center",
-      marginTop: Platform.OS === 'ios' ? 30 : 40
+        flex: 1,
+        //justifyContent: "center",
+        //  alignItems: "center",
+        //marginTop: Platform.OS === 'ios' ? 30 : 40
+        backgroundColor: 'white'
     },
-    modalView: {
-    height:700,
-     width: '100%',
-      //margin: 20,
-      backgroundColor: "white",
-     // borderRadius: 20,
-     // padding: 35,
-      //alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5
-    },
-     textStyle: {
-      color: "black",
-      fontSize: 24,
-      fontFamily: 'OldStandardTT-Regular'
+    textStyle: {
+        color: "black",
+        fontSize: 24,
+        fontFamily: 'OldStandardTT-Regular'
     },
     header:{
         height: 60,
@@ -143,9 +135,6 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         marginTop: 25
     },
-    text:{
-        color:'white'
-    },
     statContainer:{
         flex:1,
         justifyContent: 'center',
@@ -182,5 +171,4 @@ const styles = StyleSheet.create({
         textAlign:'center'
 
     }
-  });
-  
+})

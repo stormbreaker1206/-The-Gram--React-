@@ -71,7 +71,7 @@ const MainScreen = ({signIn, GetCurrentData}) => {
 
 
                                 showMessage({
-                                    text: "Verification code has been sent to your phone.",
+                                    text: "Tap and enter the verification code that has been sent to your phone.",
 
 
                                 });
@@ -116,7 +116,7 @@ const MainScreen = ({signIn, GetCurrentData}) => {
 
                     <TouchableOpacity style={{alignItems:'center'}} disabled={!verificationId}
                                       onPress={async () => {
-                                          isMountedRef.current = true;
+                                        //  isMountedRef.current = true;
                                           try {
                                               const credential = firebase.auth.PhoneAuthProvider.credential(
                                                   verificationId,
@@ -128,39 +128,41 @@ const MainScreen = ({signIn, GetCurrentData}) => {
 
                                            if(response){
 
-                                               if(isMountedRef.current) {
+                                                       // console.log(response)
 
                                                    //check if user already exist
                                                    const snapshot = await firebase
                                                        .database()
-                                                       .ref('users/')
+                                                       .ref('users')
                                                        .child(response.user.uid)
-                                                       .orderByChild('phone')
-                                                       .equalTo(phoneNumber.toString())
-                                                       .once('value').then((res) =>{
+                                                       .once('value', (res) =>{
 
-                                                           if(res){
-                                                               //sign in if exist
-                                                               signIn(response.user)
-                                                           }else {
 
+
+                                                           if(res.val() === null){
+
+                                                               let proPic = 'https://icons.iconarchive.com/icons/artdesigner/tweet-my-web/256/gossip-birds-icon.png';
                                                                //store information in the database and sign in
-                                                               const user =  firebase.database().ref('users/')
+                                                               const user =  firebase.database().ref('users')
                                                                    .child(response.user.uid).set({datJoined:getCurrentTime().toString(),
                                                                        encrypted:randomName(5), handle:randomName(6),
-                                                                       id:response.user.uid,phone:phoneNumber})
+                                                                       id:response.user.uid,phone:phoneNumber, image:proPic})
 
                                                                signIn(response.user)
-
+                                                           }else {
+                                                               //sign in if exist
+                                                              // console.log(phoneNumber)
+                                                               signIn(response.user)
+                                                              // console.log(res.val())
                                                            }
-                                                       });
+                                                       })
 
                                                }
 
-                                           }
+
 
                                               showMessage({ text: "Phone authentication successful 👍" });
-                                              return () => isMountedRef.current = false;
+                                            //  return () => isMountedRef.current = false;
                                           } catch (err) {
                                               showMessage({ text: `Error: ${err.message}`, color: "red" });
                                           }

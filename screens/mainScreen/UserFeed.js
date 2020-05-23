@@ -12,7 +12,7 @@ class UserFeed extends React.Component{
     state ={
         currentUserId: null,
         isLoading: false,
-        postData: [],
+       // postData: [],
        // profile : this.props.navigation.navigate('MyProfile')
     }
 
@@ -47,7 +47,8 @@ class UserFeed extends React.Component{
                 .ref('posts').orderByChild('time');
                 posts.on('value',  (snapshot) => {
                     const postArray = snapshotToArray(snapshot)
-                    this.setState({postData: postArray})
+                    //this.setState({postData: postArray})
+                    this.props.GetPostData(postArray.reverse())
                    // console.log(checkLikes(postArray));
                    // console.log(postArray)
 
@@ -66,7 +67,7 @@ class UserFeed extends React.Component{
         return (
             <View style={styles.container}>
 
-                <PostComponent navigation={this.props.navigation} data={this.state.postData}/>
+                <PostComponent navigation={this.props.navigation}/>
             </View>
         );
     }
@@ -81,7 +82,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToprops = dispatch =>{
     return{
-        GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data})
+        GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data}),
+        GetPostData: data => dispatch({type: 'GET_POST_DATA', payload:data})
 
     }
 
