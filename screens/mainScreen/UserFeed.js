@@ -1,7 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, FlatList } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import moment from "moment";
 import {connect} from 'react-redux';
 import * as firebase from "firebase";
 import PostComponent from "../../components/PostComponent/PostComponent";
@@ -12,6 +10,7 @@ class UserFeed extends React.Component{
     state ={
         currentUserId: null,
         isLoading: false,
+
        // postData: [],
        // profile : this.props.navigation.navigate('MyProfile')
     }
@@ -21,6 +20,7 @@ class UserFeed extends React.Component{
         Promise.all([
             this.getUserData(),
             this.getPost(),
+
         ]);
     
     }
@@ -28,7 +28,7 @@ class UserFeed extends React.Component{
 
     getUserData = async () => {
         try {
-            const id = this.props.auth.currentUser.uid;
+            const id = this.props.currentUser.uid;
             const currentUserData = await  firebase.database().ref('users')
                 .child(id).on('value', (snapshot) =>{
                     this.props.GetCurrentData(snapshot.val())
@@ -39,6 +39,9 @@ class UserFeed extends React.Component{
 
 
     }
+
+
+
 
     getPost = async () => {
         try {
@@ -67,23 +70,23 @@ class UserFeed extends React.Component{
         return (
             <View style={styles.container}>
 
-                <PostComponent navigation={this.props.navigation}/>
+                <PostComponent data={this.props.postData} user={this.props.currentUser} navigation={this.props.navigation}/>
             </View>
         );
     }
 }
 
-const mapStateToProps = state => {
-    return{
-        auth:state.auth
+const mapStateToProps = ({auth: {currentUser}, userPostData:{postData}}) => ({
+    currentUser,
+    postData,
 
-    }
-}
+
+})
 
 const mapDispatchToprops = dispatch =>{
     return{
         GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data}),
-        GetPostData: data => dispatch({type: 'GET_POST_DATA', payload:data})
+        GetPostData: data => dispatch({type: 'GET_POST_DATA', payload:data}),
 
     }
 

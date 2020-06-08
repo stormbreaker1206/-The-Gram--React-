@@ -3,9 +3,6 @@ const initialState = {
     isSignedIn: false,
     currentUser: null,
     currentUserData: null,
-    userPostData: null,
-    postData: null,
-    post: null
 
 }
 
@@ -31,22 +28,6 @@ const auth = (state = initialState, action) => {
             return {
                 ...state,
                 currentUserData: action.payload
-            }
-        case  "GET_USER_POST_ID":
-            return {
-                ...state,
-                userPostData: action.payload
-
-            }
-        case "GET_POST_DATA":
-            return {
-                ...state,
-                postData: action.payload
-            }
-        case "GET_POST":
-            return {
-                ...state,
-                post: action.payload
             }
 
         default:

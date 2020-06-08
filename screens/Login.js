@@ -1,9 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
-import CustomButton from "../components/customButtons/customButtons";
-import {connect} from 'react-redux';
-
+import { StyleSheet, Text, View, StatusBar, Image, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Swiper from 'react-native-swiper';
+const {width, height}= Dimensions.get('window');
 class Login extends React.Component{
 
 
@@ -26,27 +24,33 @@ class Login extends React.Component{
     }
     render() {
         return (
-            <LinearGradient colors={['#BD0ADA', '#E9A1F4']} style={styles.gradient}>
+    <View style={{flex:1}}>
+        {this.state.fontLoaded? (  <View style={styles.container}>
+        <StatusBar hidden={true}/>
+        <Swiper autoplay={true}>
+            <View style={styles.slide}>
+                <Image source={require('../assets/Welcome.png')} style={styles.image}/>
+            </View>
+            <View style={styles.slide}>
+                <Image source={require('../assets/HotTopics.png')} style={styles.image}/>
+            </View>
+            <View style={styles.slide}>
+                <Image source={require('../assets/chat.png')} style={styles.image}/>
+            </View>
+        </Swiper>
+        <View style={styles.buttonContainer}>
+            <View style={styles.login}>
+                <TouchableOpacity onPress={this.redirect}>
+                <Text style={styles.textFont}>Sign up/ Login</Text>
+                </TouchableOpacity>
+            </View>
 
-                {this.state.fontLoaded? ( <View style={styles.container}>
+        </View>
+    </View>):
+            ( <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>) }
 
-                    <View style={styles.iconContainer}>
-                        <Image source={require('../assets/gossip.png')}/>
-                        <Text style={styles.mainText}>The Gram</Text>
-                    </View>
-                    <View style={styles.messageContainer}>
-                        <Text style={styles.mainText}>
-                            We are Anonmymous, we are private, We do share anyone’s identify, Dont expect us to! test
-                        </Text>
-                        <CustomButton text='Login/Sign up' onPress={this.redirect} />
-                    </View>
-
-                </View>): ( <ActivityIndicator color = 'white' size = "large" style = {styles.activityIndicator}/>) }
-
-
-
-            </LinearGradient>
-        );
+    </View>
+        )
     }
 
 
@@ -58,40 +62,57 @@ export default Login;
 const styles = StyleSheet.create({
     container: {
        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    iconContainer:{
+    slide:{
         flex:1,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    messageContainer:{
-        flex:1,
-        alignItems: 'center',
-
-
-
+    image:{
+        width: width,
+        height: height
     },
 
-    gradient: {
-        flex: 1,
-    },
-    mainText:{
-        color:'white',
-        fontFamily: 'OldStandardTT-Regular',
-        textAlign: 'center'
+    buttonContainer:{
+       // flex:1,
+        position: 'absolute',
+        bottom: 70,
+        height: 60,
+        marginLeft: 20,
+       //alignItems: 'center',
+       //justifyContent: 'center'
 
     },
+    login:{
 
-    welcomeText:
-
-        {
-            fontWeight: '100'
+        width: 180,
+        height: 50,
+        backgroundColor: '#FFFFFF',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
         },
-    activityIndicator: {
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    textFont:{
+        fontFamily: 'OldStandardTT-Regular',
+        fontWeight: '100'
+    },
+
+     activityIndicator: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        height: 80
+        height: 80,
     }
 
 

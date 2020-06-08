@@ -17,7 +17,6 @@ class ProfileHeader extends React.Component{
         screen: screenWidth,
         right: false
 
-        
     }
 
     openImageLibrary = async () =>{

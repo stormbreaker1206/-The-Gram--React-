@@ -1,10 +1,9 @@
 import React from 'react';
-import {StyleSheet, StatusBar, Text, View, TextInput, Image, ActivityIndicator, TouchableOpacity, TouchableHighlight} from 'react-native';
-import {Badge} from 'native-base'
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {Ionicons, Octicons} from "@expo/vector-icons";
-import ImageModalView from "../ImageModalComponent/ImageModalView";
 import moment from "moment";
 import {Video} from "expo-av";
+import {checkLikesCount, checkRumourCount, checkAuthenticCount} from "../../helpers/userUtilis";
 import {checkLikes} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
 import {updateLike} from '../../helpers/firebaseHelpers'
@@ -107,7 +106,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
             <View style={{flex:1}}>
             <View style={{ flexDirection: 'row', paddingLeft: 8 }}>
 
-                 <Text style={[styles.text, {color:'black', alignItems:'center'}]}>1</Text>
+                 <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkLikesCount(item)}</Text>
                 <TouchableOpacity onPress={()=>updateLike(item, auth.currentUser.uid)}>
                
                 <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
@@ -115,12 +114,13 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
                 </TouchableOpacity>
                 <Text style={[styles.text, {color:'black', alignItems:'center'}]}>16</Text>
                 <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
-               
-                <View style={{ flexDirection: "row", flex:1, paddingLeft: 8, justifyContent:'space-evenly', alignItems:'center' }}>
-                    
-                    
-                    <Text style={styles.text}>Rumour 1</Text>
-                    <Text style={styles.text}>Authentic 1</Text>
+
+                <View style={{ flexDirection: "row", flex:1, marginLeft:80, paddingLeft: 8, paddingBottom:5, justifyContent:'space-evenly', alignItems:'center', }}>
+
+
+
+                <Text style={styles.text}>{checkRumourCount(item)} Rumour</Text>
+                    <Text style={styles.text}>{checkAuthenticCount(item)} Authentic</Text>
                     
                 </View>
             </View>

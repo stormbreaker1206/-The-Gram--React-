@@ -35,6 +35,83 @@ export const checkLikes = (item, id) =>{
     return likes;
 }
 
+export const checkAuthenticCount = (item) =>{
+    let result = 0
+    if (item.hasOwnProperty('authentic')) {
+       Object.keys(item["authentic"]).forEach(function(key) {
+
+           result++
+
+       })
+    }
+
+    return result;
+}
+
+export const checkRumourCount = (item) =>{
+    let result = 0
+    if (item.hasOwnProperty('rumour')) {
+        Object.keys(item["rumour"]).forEach(function(key) {
+
+            result++
+
+        })
+    }
+
+    return result;
+}
+
+export const checkLikesCount = (item) =>{
+    let result = 0
+    if (item.hasOwnProperty('likes')) {
+        Object.keys(item["likes"]).forEach(function(key) {
+
+            result++
+
+        })
+    }
+
+    return result;
+}
+
+export const ifRumourExist = (item, id) =>{
+    let result = "Mark as Rumour"
+    if (item.hasOwnProperty('rumour')) {
+        Object.keys(item["rumour"]).forEach(function(key) {
+            let rumour = item["rumour"][key].userId;
+
+            if(rumour === id){
+                result = 'Un-Mark Rumour'
+            }
+
+
+        });
+    }
+
+
+    return result;
+}
+
+export const ifAuthenticExist = (item, id) =>{
+    let result = "Mark as Authentic"
+    if (item.hasOwnProperty('authentic')) {
+        Object.keys(item["authentic"]).forEach(function(key) {
+            let rumour = item["authentic"][key].userId;
+
+            if(rumour === id){
+                result = 'Un-Mark Authentic'
+            }
+
+
+        });
+    }
+
+
+    return result;
+}
+
+
+
 export const hoursAgo = date => {
     let seconds = Math.floor((new Date() - date) / 1000);
 

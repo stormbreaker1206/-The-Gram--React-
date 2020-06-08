@@ -4,12 +4,13 @@ import { Ionicons, Octicons } from "@expo/vector-icons";
 import moment from "moment";
 import {Video} from "expo-av";
 import {connect} from 'react-redux';
-import ImageModalView from "../ImageModalComponent/ImageModalView";
-import {checkLikes} from "../../helpers/userUtilis";
-import {updateLike} from "../../helpers/firebaseHelpers";
+import {checkLikes, checkAuthenticCount, checkRumourCount, checkLikesCount, ifRumourExist, ifAuthenticExist} from "../../helpers/userUtilis";
 import { compose } from 'redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-import {getName, getUserPost} from '../../helpers/firebaseHelpers';
+import {getName, getUserPost, updateLike, isRumour, isAuthentic} from '../../helpers/firebaseHelpers';
+import LightBoxView from "../LightBox/LightBoxComponent";
+import Lightbox from "react-native-lightbox";
+let authCountNumber = 0
 
 class PostComponent extends React.Component{
     constructor(props){
@@ -25,18 +26,15 @@ class PostComponent extends React.Component{
                 likedCColor: 'black',
                 uid: null,
                 playVideo: true,
-                postId: null
+                postId: null,
 
-
-
-        
         }
 
     }
 
     
-     settings = ()=>{
-        const options = ['Mark as Rumour ', 'Mark as Authentic', 'Report', 'Cancel'];
+     settings = (item, id, isRumourExist, isAuthenticExist)=>{
+        const options = [isRumourExist, isAuthenticExist, 'Report', 'Cancel'];
         const cancelButtonIndex = 3;
 
         this.props.showActionSheetWithOptions(
@@ -49,11 +47,17 @@ class PostComponent extends React.Component{
                 // Do something here depending on the button index selected
 
                 if(buttonIndex == 0){
-                    alert('mark as rumour')
-                  //  this.openImageLibrary()
+
+                    isRumour(item, id).then(res=>{
+
+
+                    })
+
                 }else if(buttonIndex == 1){
-                   // this.openCamera()
-                   alert('marked as authentic')
+                    isAuthentic(item, id).then(res=>{
+
+                    })
+
                 }else if(buttonIndex == 2){
                     alert('reported')
                 }
@@ -61,15 +65,21 @@ class PostComponent extends React.Component{
         );
     }
     
-   
-  
 
-    componentDidMount = async () =>{
-  
-      this.setState({uid: this.props.auth.currentUser.uid})
+
+    componentDidMount = () =>{
+
+        Promise.all([
+            this.setState({uid: this.props.user.uid}),
+           // this.getLikePosts(),
+
+        ]);
+
 
     }
-    
+
+
+
 
     redirectToUserProfile = (item) =>{
         // this.props.navigation.navigate('MyProfile', {id : id})
@@ -78,19 +88,6 @@ class PostComponent extends React.Component{
 
          
      }
-
-  
-   
-    openImageModal = async (item) => {
-
-       await this.setState({selectedItem: item})
-        const open = this.state.isVisible
-        if(this.state.isVisible){
-            this.setState({isVisible: !open})
-        }else {
-            this.setState({isVisible: !open})
-        }
-    }
 
 
     viewProfile =  async (id) => {
@@ -115,7 +112,13 @@ class PostComponent extends React.Component{
 
     renderPost = ({item}) => {
 
+      // const authCount = checkAuthenticCount(item)
+      //  let test = authCount
+     // console.log()
 
+
+        const isRumourExist = ifRumourExist(item, this.state.uid)
+        const isAuthenticExist = ifAuthenticExist(item, this.state.uid)
         const userlike = checkLikes(item, this.state.uid);
         let userLikedPost = '';
         let iconColor = '';
@@ -127,15 +130,14 @@ class PostComponent extends React.Component{
              iconColor = 'black';
         }
        
-     //console.log(userlike)
 
-   
 
           return (
 
 
         <View style={styles.feedItem}>
-              <ImageModalView isVisible={this.state.isVisible} userLikedPost={userLikedPost} selectedItem={this.state.selectedItem} onPress={this.openImageModal}/>
+
+
               <View>
 
                 <View style={{ flex: 1 }}>
@@ -152,7 +154,7 @@ class PostComponent extends React.Component{
 
                             <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
                         </View>
-                        <TouchableOpacity onPress={this.settings}>
+                        <TouchableOpacity onPress={()=>this.settings(item, this.state.uid, isRumourExist, isAuthenticExist)}>
                         <Ionicons name="ios-more" size={24} color="#73788B" />
                         </TouchableOpacity>
 
@@ -182,10 +184,10 @@ class PostComponent extends React.Component{
                                 />
 
                             ): (
-                                <TouchableOpacity onPress={() =>this.openImageModal(item)}>
-                               <Image loadingIndicatorSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
-                                source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
-                                </TouchableOpacity>
+                                <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={item} user={this.state.uid} userLikedPost={userLikedPost} />}>
+                               <Image  source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
+
+                                </Lightbox>
                             )}
                         </View>
 
@@ -193,17 +195,22 @@ class PostComponent extends React.Component{
 
                     <View style={{flex:1}}>
                     <View style={{ flexDirection: "row", paddingLeft: 8 }}>
-                    <Text style={[styles.text, {color:'black', alignItems:'center'}]}>1</Text>
+                    <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkLikesCount(item)}</Text>
                         <TouchableOpacity onPress={()=> updateLike(item, this.state.uid)}>
                         <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
                         </TouchableOpacity>
                         <Text style={[styles.text, {color:'black', alignItems:'center'}]}>16</Text>
+                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment')}>
                         <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
+                        </TouchableOpacity>
 
-                        <View style={{ flexDirection: "row", flex:1, paddingLeft: 8, justifyContent:'space-evenly', alignItems:'center' }}>
+                        <View style={{ flexDirection: "row", flex:1, marginLeft:80, paddingLeft: 8, paddingBottom:5, justifyContent:'space-evenly', alignItems:'center', }}>
 
-                            <Text style={styles.text}>16 Rumour</Text>
-                            <Text style={styles.text}>1 Authentic</Text>
+
+
+                            <Text style={styles.text}>{checkRumourCount(item)} Rumour</Text>
+                            <Text style={styles.text}>{checkAuthenticCount(item)} Authentic</Text>
+
 
                         </View>
                     </View>
@@ -220,7 +227,7 @@ class PostComponent extends React.Component{
 
                 <FlatList
 
-                    data={this.props.auth.postData}
+                    data={this.props.data}
                     renderItem={this.renderPost}
                     keyExtractor={post => post.key}
                     showsVerticalScrollIndicator={false}
@@ -230,22 +237,20 @@ class PostComponent extends React.Component{
     }
 }
 
+
 const mapDispatchToprops = dispatch =>{
     return{
         userPostData: data => dispatch({type:'GET_USER_POST_ID', payload:data}),
-        userPost: data => dispatch({type:'GET_POST', payload:data})
+        userPost: data => dispatch({type:'GET_POST', payload:data}),
+
 
     }
 
 }
 
-const mapStateToProps = state => {
-    return{
-        auth:state.auth
-    }
-}
+
 const wrapper = compose(
-    connect(mapStateToProps,mapDispatchToprops),
+    connect(null, mapDispatchToprops),
     connectActionSheet
   );
 

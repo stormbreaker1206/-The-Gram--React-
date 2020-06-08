@@ -16,18 +16,14 @@ class CustomDrawerComponent extends Component {
     }
 
 
-
-
     componentDidMount() {
         this.getUserData()
 
-       // this.setState({image: this.props.auth.currentUserData.image}, ()=>console.log(results) )
-        
     }
 
     getUserData = async () => {
         try {
-            const id = this.props.auth.currentUser.uid;
+            const id = this.props.currentUser.uid;
             const currentUser = await  firebase.database().ref('users')
                 .child(id).on('value', (snapshot)=>{
                     this.setState({results: snapshot.val()})
@@ -108,11 +104,10 @@ class CustomDrawerComponent extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return{
-        auth:state.auth
-    }
-}
+const mapStateToProps = ({auth: {currentUser}}) => ({
+    currentUser,
+
+})
 
 const mapDispatchToprops = dispatch =>{
     return{

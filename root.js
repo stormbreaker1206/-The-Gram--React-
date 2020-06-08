@@ -26,6 +26,7 @@ import Modal from "./screens/mainScreen/Modal";
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
 import UserProfile from "./screens/mainScreen/UserProfile";
+import Comment from "./screens/mainScreen/Comment";
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -42,7 +43,10 @@ class Root extends React.Component{
     constructor() {
         super();
         this.initializeFirebase();
-        
+        this.state={
+            topicId: null
+        }
+
 
     }
 
@@ -57,7 +61,10 @@ class Root extends React.Component{
             'Roboto': require('./assets/fonts/Roboto-Light.ttf')
         });
 
+
     }
+
+
 
 
     checkIfLoggedIn = () => {
@@ -97,14 +104,15 @@ class Root extends React.Component{
 
     }
 
+
     render() {
-        if(this.props.auth.isLoading){
+        if(this.props.isLoading){
             return <SplashScreen/>;
         }
 
         return (
                 <NavigationContainer>
-                    {!this.props.auth.isSignedIn ? (
+                    {!this.props.isSignedIn ? (
                         <Stack.Navigator>
                             <Stack.Screen name="Login" component={Login}  options={{ headerShown: false }}/>
                             <Stack.Screen name="MainScreen"
@@ -129,17 +137,18 @@ class Root extends React.Component{
 
 }
 
-const mapStateToProps = state => {
-    return{
-        auth:state.auth
-
-    }
-}
+const mapStateToProps = ({auth: {currentUser, isLoading, isSignedIn}}) => ({
+    currentUser,
+    isLoading,
+    isSignedIn
+})
 
 const mapDispatchToprops = dispatch =>{
     return{
         signIn: user => dispatch({type:'SIGN_IN', payload:user}),
-        signOut: () => dispatch({type: 'SIGN_OUT'})
+        signOut: () => dispatch({type: 'SIGN_OUT'}),
+
+
     }
 
 }
@@ -256,10 +265,13 @@ const HomeStackNavigator = ({navigation}) => (
             })}
             name="HomeTabNavigator" component={HomeTabNavigator}/>
             <Stack.Screen name="modal" options={{ title: '' }} component={Modal}/>
+            <Stack.Screen name="Comment" options={{ title: '', headerShown: false }} component={Comment}/>
+            <Stack.Screen name='UserProfile' options={{title: '', headerShown: false}} component={UserProfile}/>
 
             
     </Stack.Navigator>
 )
+
 
 
 const AppDrawerNavigator = () => (
@@ -277,13 +289,11 @@ const AppDrawerNavigator = () => (
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-home" size={24} />}} name="Home" component={HomeStackNavigator} />
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-contact" size={24} />}} name="MyProfile" component={MyProfile} />
         <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons color='black' name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} />
-        <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-contacts" size={24} />}} name="Friends"  component={Friends}/>
-        <Drawer.Screen  options={{
-            drawerLabel: () => null,
-            title: null,
-            drawerIcon: () => null,
+        <Drawer.Screen options={
+            {drawerIcon: ()=> <Ionicons color='black' name="ios-contacts" size={24} />, drawerLabel:'Grammers'}
 
-        }} name="UserProfile" component={UserProfile}/>
+
+        } name="Friends"  component={Friends}/>
 
     </Drawer.Navigator>
 );

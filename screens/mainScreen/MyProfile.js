@@ -15,7 +15,7 @@ class MyProfile extends React.Component{
 
 
     Redirect = ()=> {
-       this.props.navigation.navigate('Home')
+       this.props.navigation.navigate('HomeTabNavigator')
     }
     render() {
 

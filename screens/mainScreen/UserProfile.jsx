@@ -9,7 +9,7 @@ import UserPost from "../../components/PostComponent/UserPost";
 class UserProfile extends React.Component {
 
    Redirect = ()=> {
-        this.props.navigation.navigate('Home')
+        this.props.navigation.navigate('HomeTabNavigator')
        }
 
    render(){
@@ -25,13 +25,13 @@ class UserProfile extends React.Component {
                         <Ionicons color='black'  name="ios-arrow-back" size={24} />
 
 
-                        <Text style={styles.textStyle}>{this.props.auth.userPostData.handle}</Text>
+                        <Text style={styles.textStyle}>{this.props.userPostData.handle}</Text>
                         <Text></Text>
 
                     </View>
                 </TouchableOpacity>
                 <View style={styles.imageContainer}>
-                    <Image source={{uri: this.props.auth.userPostData.image }} style={styles.avatar}/>
+                    <Image source={{uri: this.props.userPostData.image }} style={styles.avatar}/>
                 </View>
                 <View style={styles.container}>
                     <View style={styles.statContainer}>
@@ -53,7 +53,7 @@ class UserProfile extends React.Component {
 
 
                     <View>
-                        {this.props.auth.post.map((posts) =>{
+                        {this.props.post.map((posts) =>{
                             return  (
 
                                 <UserPost item={posts} key={posts.key}/>
@@ -76,11 +76,12 @@ class UserProfile extends React.Component {
 
 }
 
-const mapStateToProps = state => {
-    return{
-        auth:state.auth
-    }
-}
+const mapStateToProps = ({userPostData: {userPostData, post}}) => ({
+
+    userPostData,
+    post
+
+})
 export default connect(mapStateToProps) (UserProfile);
 
 const styles = StyleSheet.create({

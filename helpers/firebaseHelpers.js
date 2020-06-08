@@ -15,6 +15,7 @@ export const snapshotToArray = snapshot => {
  
 };
 
+
 export const getName = async  (id) =>{
     if(id === null || id === undefined){
 
@@ -65,7 +66,7 @@ export const updateLike = async (item, id) =>{
   try{
 
       const  ref =  await firebase.database().ref('posts').child(item.key).child('likes');
-      ref.orderByChild('userId').equalTo(id)
+      await ref.orderByChild('userId').equalTo(id)
       .once('value', function(snapshot) {
 
               if(snapshot.exists()){
@@ -98,5 +99,86 @@ export const updateLike = async (item, id) =>{
 
 
 }
+
+
+export const isRumour = async (item, id) =>{
+
+    try{
+
+        const  ref =  await firebase.database().ref('posts').child(item.key).child('rumour');
+        await ref.orderByChild('userId').equalTo(id)
+            .once('value', function(snapshot) {
+
+                if(snapshot.exists()){
+
+                    snapshot.forEach(function(snapshot1) {
+                        //console.log(snapshot1.key);
+                        // e.g. "h
+                        firebase.database().ref('posts').child(item.key).child('rumour').
+                        child(snapshot1.key).remove();
+
+                        //ref.child(snapshot1.key).remove()
+                    })
+
+
+                }else{
+                    const changeStatus =  firebase
+                        .database()
+                        .ref('posts').child(item.key).child('rumour')
+                        .push({ userId: id});
+                }
+
+
+            });
+
+
+
+    }catch (e){
+        console.log(e)
+    }
+
+
+}
+export const isAuthentic = async (item, id) =>{
+
+    try{
+
+        const  ref =  await firebase.database().ref('posts').child(item.key).child('authentic');
+        await ref.orderByChild('userId').equalTo(id)
+            .once('value', function(snapshot) {
+
+                if(snapshot.exists()){
+
+                    snapshot.forEach(function(snapshot1) {
+                        //console.log(snapshot1.key);
+                        // e.g. "h
+                        firebase.database().ref('posts').child(item.key).child('authentic').
+                        child(snapshot1.key).remove();
+
+                        //ref.child(snapshot1.key).remove()
+                    })
+
+
+                }else{
+                    const changeStatus =  firebase
+                        .database()
+                        .ref('posts').child(item.key).child('authentic')
+                        .push({ userId: id});
+                }
+
+
+            });
+
+
+
+    }catch (e){
+        console.log(e)
+    }
+
+
+}
+
+
+
 
 

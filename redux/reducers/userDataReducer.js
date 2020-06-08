@@ -1,15 +1,15 @@
 const initialState = {
 
-    currentUserData: null
+    allUser:null
 }
 
 const userData = (state = initialState, action) => {
     switch (action.type) {
 
-        case "GET_USER_DATA":
+        case "GET_ALL_USER_DATA":
             return {
                 ...state,
-                currentUserData: action.payload
+                allUser: action.payload
             }
         default:
             return state
