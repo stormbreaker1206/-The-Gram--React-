@@ -3,7 +3,7 @@ import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import moment from "moment";
 import {Video} from "expo-av";
-import {checkLikesCount, checkRumourCount, checkAuthenticCount} from "../../helpers/userUtilis";
+import {checkLikesCount, checkRumourCount, checkAuthenticCount, checkCommentsCount} from "../../helpers/userUtilis";
 import {checkLikes} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
 import {updateLike} from '../../helpers/firebaseHelpers'
@@ -16,7 +16,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
     let iconColor = '';
     if(userlike[0] === auth.currentUser.uid){
          userLikedPost = 'ios-heart';
-         iconColor = '#BD0ADA'
+         iconColor = '#90949c'
     }else{
          userLikedPost = 'ios-heart-empty';
          iconColor = 'black';
@@ -112,7 +112,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
                 <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
                 
                 </TouchableOpacity>
-                <Text style={[styles.text, {color:'black', alignItems:'center'}]}>16</Text>
+                <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkCommentsCount(item)}</Text>
                 <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
 
                 <View style={{ flexDirection: "row", flex:1, marginLeft:80, paddingLeft: 8, paddingBottom:5, justifyContent:'space-evenly', alignItems:'center', }}>

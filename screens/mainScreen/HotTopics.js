@@ -80,14 +80,14 @@ class HotTopics extends React.Component{
         }catch (e) {
             console.log(e)
         }
-       // console.log(this.state.hotTopicsPostData)
+        //console.log(this.state.hotTopicsPostData)
     }
 
     render() {
         return(
             <View style={styles.container}>
 
-                {Array.isArray(this.state.hotTopicsPostData) && this.state.hotTopicsPostData.length  ? (
+                {Array.isArray(this.state.hotTopicsPostData) && this.state.hotTopicsPostData.length > 0 ? (
                     <PostComponent data={this.state.hotTopicsPostData} user={this.props.currentUser} navigation={this.props.navigation}/>
                 ): (
                     <View style={styles.messageContainer}>

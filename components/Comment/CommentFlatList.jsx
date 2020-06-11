@@ -16,19 +16,19 @@ const CommentFlatList = ({item}) => {
 
                 <View style={{flex: 1}}>
                     <View style={{flexDirection: "row", alignItems: "center"}}>
-                        <Image source={item.avatar} style={styles.avatar}/>
-                        <Text style={styles.name}>{item.name}</Text>
+                        <Image source={{uri: item.userImage}} style={styles.avatar}/>
+                        <Text style={styles.name}>{item.handle}</Text>
                     </View>
                     <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                         <View>
 
-                            <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
+                            <Text style={styles.timestamp}>{moment(item.timePosted).fromNow()}</Text>
                         </View>
 
 
                     </View>
 
-                    <Text style={styles.post}>{item.text}</Text>
+                    <Text style={styles.post}>{item.comments}</Text>
 
 
 

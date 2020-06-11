@@ -1,6 +1,7 @@
 import React, {Component, useState} from "react";
 import {Overlay} from "react-native-elements";
 const {height}= Dimensions.get('window');
+const deviceheight =  height * 70 / 100
 import {
     Dimensions,
     Image,
@@ -15,9 +16,11 @@ import {
 } from "react-native";
 import {Container, Left, Right, Body, Header, Content, Footer, Item, Input, Spinner} from "native-base";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
+import CommentFlatList from "./CommentFlatList";
 
-const CommentModal = ({modalVisible, onPress}) => {
+const CommentModal = ({modalVisible, onPress, data}) => {
     const [buttonVisible, setButtonVisible] = useState('');
+
      return (
 
 
@@ -45,7 +48,23 @@ const CommentModal = ({modalVisible, onPress}) => {
                          </Header>
 
                          <Content>
-                             <Text>hi</Text>
+
+                        <View style={styles.flatListContainer}>
+                             {data.map((posts) =>{
+                                 return  (
+
+
+
+                                     <CommentFlatList item={posts} key={posts.key}/>
+
+
+
+                                 );
+
+                             })}
+
+                        </View>
+
                          </Content>
 
                          <View style={{ justifyContent: "center",
@@ -69,13 +88,16 @@ const styles = StyleSheet.create({
        alignItems: "center",
        // marginTop: 22
     },
+    flatListContainer:{
+        padding: Platform.OS === 'ios' ? 0 : 5
+    },
     modalView: {
         // margin: 20,
 
         position: 'absolute',
         left: 0,
-        top: Platform.OS === 'ios' ? 30 : 0,
-        height: 445,
+        top: 0,
+        height: deviceheight,
         width: '100%',
         backgroundColor: "white",
         borderRadius: 20,
@@ -108,7 +130,7 @@ const styles = StyleSheet.create({
        // position:'absolute',
         //marginTop:22,
         //zIndex:1,
-        top:20,
+        top:19,
         width: 0,
         height: 0,
         backgroundColor: 'transparent',

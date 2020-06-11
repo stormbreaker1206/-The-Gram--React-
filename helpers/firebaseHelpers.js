@@ -178,6 +178,52 @@ export const isAuthentic = async (item, id) =>{
 
 }
 
+export const commentOnPost = async (postId, comments, uid, userImage, handle) =>{
+
+    try {
+
+       const comment = await firebase
+            .database()
+            .ref('comment')
+            .push({ postId: postId, userId: uid, comments: comments, timePosted: Date.now(), userImage: userImage, handle: handle});
+        // await  this.setState({isLoading: false})
+
+    }catch (e) {
+        console.log(e)
+    }
+}
+
+export const updateComment = async (postId, id) =>{
+
+    try{
+
+        const  ref =  await firebase.database().ref('posts').child(postId).child('comments')
+            .push({userId: id});
+
+    }catch (e){
+        console.log(e)
+    }
+
+
+}
+
+export const getNumberOfPosts = async (id) =>{
+    let results = ""
+    try {
+
+        const posts = await firebase
+            .database()
+            .ref('posts').orderByChild('id').equalTo(id);
+        posts.on('value',  (snapshot) => {
+
+            results = snapshot.numChildren()
+        });
+    }catch (e) {
+        console.log(e)
+    }
+
+return results
+}
 
 
 

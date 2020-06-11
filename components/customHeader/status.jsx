@@ -1,28 +1,47 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {connect} from 'react-redux';
+import {getNumberOfPosts} from "../../helpers/firebaseHelpers";
+import {FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
 
-export default function Status (){
+
+const Status = ({currentUser}) =>{
+    const [numberOfPost, setNumberOfPost] = React.useState(0);
+
+    getNumberOfPosts(currentUser.uid).then(res=>{
+        setNumberOfPost(res)
+    })
 
     return(
-        <View style={styles.container}>
-            <View style={styles.statContainer}>
-                <Text style={styles.number}>12k</Text>
-                <Text style={styles.stat}>Grammers</Text>
-            </View>
-            <View style={[styles.statContainer, styles.divider]}>
-                <Text style={styles.number}>12k</Text>
-                <Text style={styles.stat}>Posts</Text>
-            </View>
-            <View style={styles.statContainer}>
-                <Text style={styles.number}>12k</Text>
-                <Text style={styles.stat}>Kudos</Text>
-            </View>
-            
+
+
+        <View style={{flex:1, flexDirection: 'row', justifyContent:'center', alignContent:'center'}}>
+
+
+            <TouchableOpacity style={styles.follow}>
+
+                <Text style={styles.followText}> Kudos Badge</Text>
+                <SimpleLineIcons style={styles.icon} name="badge" size={24} color="white" />
+
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.followSettings}>
+                <Ionicons  name="ios-more" size={24} color="black" />
+            </TouchableOpacity>
+
+
         </View>
 
-    );
+
+
+    )
 
 }
+const mapStateToProps = ({auth: {currentUser}}) => ({
+    currentUser,
+
+})
+export default connect(mapStateToProps) (Status)
 
 const styles = StyleSheet.create({
     container:{
@@ -31,7 +50,7 @@ const styles = StyleSheet.create({
         paddingVertical: 24,
         paddingHorizontal: 32,
         marginBottom: 8,
-        backgroundColor: 'black',
+        backgroundColor: '#0078ff',
         marginHorizontal: 16,
         borderRadius: 16,
         marginTop: 25
@@ -46,7 +65,7 @@ const styles = StyleSheet.create({
         
     },
     number:{
-        fontSize: 20,
+        fontSize: 12,
         fontWeight: "200",
         color: 'white',
         fontFamily: "OldStandardTT-Regular"
@@ -66,6 +85,49 @@ const styles = StyleSheet.create({
         borderRightWidth: 1,
         borderColor: 'white',
       
+    },
+
+    follow:{
+        justifyContent:'center',
+       alignItems:'center',
+        backgroundColor:'#0078ff',
+        width:300,
+        height:40,
+        borderRadius: 10,
+        flexDirection: 'row',
+        //paddingHorizontal: 24,
+        // paddingVertical: 8,
+        marginTop: 16,
+        borderColor: 'white',
+        borderWidth:2,
+
+
+    },
+    followSettings:{
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'#e9ebee',
+        height:40,
+        width:50,
+        borderRadius: 10,
+        //  flexDirection: 'row',
+        //paddingHorizontal: 24,
+        paddingVertical: 8,
+        marginTop: 16,
+        borderColor: 'white',
+        borderWidth:2,
+
+    },
+    followText:{
+        fontSize: 16,
+        color: 'white',
+        fontWeight: '600',
+        fontFamily: "OldStandardTT-Regular",
+        marginTop: Platform.OS == "ios" ? 5 : 0,
+        marginRight: Platform.OS == "ios" ? 0 : 5
+    },
+    icon:{
+        paddingLeft: Platform.OS == "ios" ? 8 : 0
     }
 
 });

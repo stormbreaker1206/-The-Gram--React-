@@ -23,7 +23,7 @@ import UserPost from '../PostComponent/UserPost';
     getData = async () =>{
 
         try {
-          
+
 
             const id = this.props.auth.currentUser.uid;
             const posts = await firebase

@@ -19,6 +19,22 @@ class ProfileHeader extends React.Component{
 
     }
 
+    test = async (downloadUrl)=>{
+        await firebase.database().ref('posts').orderByChild('id').equalTo(this.props.auth.currentUser.uid)
+            .on('value' , (snapshot)=>{
+                //console.log(snapshot.val())
+                if(snapshot.exists()){
+                    snapshot.forEach(function (snapshot1) {
+
+                        firebase.database().ref('posts').child(snapshot1.key)
+                            .update({proPic: downloadUrl })
+
+
+                    })
+                }
+            })
+    }
+
     openImageLibrary = async () =>{
         
         const results = await openImageLibrary()
@@ -49,6 +65,9 @@ class ProfileHeader extends React.Component{
                   .database()
                   .ref('users').child(id)
                   .update({image: downloadUrl });
+
+                    await this.test(downloadUrl)
+
             
                   this.setState({isLoading: false})
               blob.close();
@@ -72,14 +91,17 @@ class ProfileHeader extends React.Component{
          
        
                 </View>
-
+                <View style={styles.wallerPaper}>
+                    <Image source={{uri: this.props.auth.currentUserData.image}} resizeMode='cover' style={{width:'100%', height:200}}/>
+                </View>
+                <TouchableOpacity onPress={this.openImageLibrary}>
                 <View style={styles.imageContainer}>
                     <View style={styles.check}>
-                    <TouchableOpacity onPress={this.openImageLibrary}>
+
                         <Ionicons name="ios-camera" size={24} color="black" />
-                        </TouchableOpacity>
+
                     </View>
-                   
+
                     {this.state.isLoading ? (
                         <Spinner color='#BD0ADA' />
                 
@@ -88,14 +110,18 @@ class ProfileHeader extends React.Component{
                        
 
                         {this.props.auth.currentUserData.image ? (
-                            <Image source={{uri: this.props.auth.currentUserData.image }} style={styles.avatar}/>
+                            <Image source={{uri: this.props.auth.currentUserData.image }} style={styles.circleImage}/>
                         ): (
-                        <Image source={require('../../assets/white-bg.jpg')} style={styles.avatar}></Image>
+                        <Image source={require('../../assets/white-bg.jpg')} style={styles.circleImage}></Image>
                         )}
      
                      </View>)}
                     
                    
+                </View>
+                </TouchableOpacity>
+                <View>
+
                 </View>
 
 
@@ -150,9 +176,9 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.3,
         position: 'absolute',
-        zIndex: 1,
+        zIndex: 5,
         right: 125,
-        bottom: 16
+        bottom: 0
          
         
     },
@@ -161,26 +187,27 @@ const styles = StyleSheet.create({
         color: "black",
         fontSize:18
     },
-
-    Follow:{
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:'pink',
-        borderRadius: 100,
-        flexDirection: 'row',
-        paddingHorizontal: 24,
-        paddingVertical: 8,
-        marginTop: 16,
-        borderColor: 'white',
-        borderWidth:2,
-        
-
+    wallerPaper:{
+        flex:1, justifyContent: 'center', margin:12,
+        alignItems: 'center',
+        overflow:"hidden",
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
     },
-    Followtext:{
-        fontSize: 16,
-        color: 'white',
-        fontWeight: '600',
-        marginLeft: 4
+    circleImage:{
+        width: 150,
+        height: 150,
+        borderRadius: 150/2,
+        position: 'absolute',
+        zIndex: 1,
+        bottom: 0,
+        borderColor: 'white',
+        borderWidth:5,
+        right: -67,
     }
+
+
 
 });

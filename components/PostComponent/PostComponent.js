@@ -4,7 +4,7 @@ import { Ionicons, Octicons } from "@expo/vector-icons";
 import moment from "moment";
 import {Video} from "expo-av";
 import {connect} from 'react-redux';
-import {checkLikes, checkAuthenticCount, checkRumourCount, checkLikesCount, ifRumourExist, ifAuthenticExist} from "../../helpers/userUtilis";
+import {checkLikes, checkAuthenticCount, checkRumourCount, checkCommentsCount, checkLikesCount, ifRumourExist, ifAuthenticExist} from "../../helpers/userUtilis";
 import { compose } from 'redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import {getName, getUserPost, updateLike, isRumour, isAuthentic} from '../../helpers/firebaseHelpers';
@@ -34,7 +34,7 @@ class PostComponent extends React.Component{
 
     
      settings = (item, id, isRumourExist, isAuthenticExist)=>{
-        const options = [isRumourExist, isAuthenticExist, 'Report', 'Cancel'];
+        const options = [isRumourExist, isAuthenticExist, 'Report Post', 'Cancel'];
         const cancelButtonIndex = 3;
 
         this.props.showActionSheetWithOptions(
@@ -106,7 +106,7 @@ class PostComponent extends React.Component{
                 this.props.userPost(res)
             })
 
-             this.props.navigation.navigate('UserProfile')
+             this.props.navigation.navigate('UserProfile', {id : id})
         }
     }
 
@@ -124,7 +124,7 @@ class PostComponent extends React.Component{
         let iconColor = '';
         if(userlike[0] === this.state.uid){
              userLikedPost = 'ios-heart';
-             iconColor = '#BD0ADA'
+             iconColor = '#90949c'
         }else{
              userLikedPost = 'ios-heart-empty';
              iconColor = 'black';
@@ -184,7 +184,7 @@ class PostComponent extends React.Component{
                                 />
 
                             ): (
-                                <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={item} user={this.state.uid} userLikedPost={userLikedPost} />}>
+                                <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={item} user={this.state.uid} userLikedPost={userLikedPost} postId={item.key} />}>
                                <Image  source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
 
                                 </Lightbox>
@@ -199,8 +199,8 @@ class PostComponent extends React.Component{
                         <TouchableOpacity onPress={()=> updateLike(item, this.state.uid)}>
                         <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
                         </TouchableOpacity>
-                        <Text style={[styles.text, {color:'black', alignItems:'center'}]}>16</Text>
-                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment')}>
+                        <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkCommentsCount(item)}</Text>
+                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment', {id : item.key})}>
                         <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
                         </TouchableOpacity>
 
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
         fontFamily: 'OldStandardTT-Regular'
     },
     postImage: {
-        width: undefined,
+        width: '100%',
         height: 300,
         borderRadius: 5,
         marginVertical: 16

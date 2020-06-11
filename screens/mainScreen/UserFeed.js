@@ -88,6 +88,7 @@ const mapDispatchToprops = dispatch =>{
         GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data}),
         GetPostData: data => dispatch({type: 'GET_POST_DATA', payload:data}),
 
+
     }
 
 }

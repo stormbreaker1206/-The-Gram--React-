@@ -184,7 +184,7 @@ const HomeTabNavigator = () => (
         })}
 
         tabBarOptions={{
-            activeTintColor: '#BD0ADA',
+            activeTintColor: '#0078ff',
             inactiveTintColor: 'black',
             labelStyle: {
                 fontFamily: 'OldStandardTT-Regular',

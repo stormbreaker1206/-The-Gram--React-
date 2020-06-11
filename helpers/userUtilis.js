@@ -74,6 +74,19 @@ export const checkLikesCount = (item) =>{
     return result;
 }
 
+export const checkCommentsCount = (item) =>{
+    let result = 0
+    if (item.hasOwnProperty('comments')) {
+        Object.keys(item["comments"]).forEach(function(key) {
+
+            result++
+
+        })
+    }
+
+    return result;
+}
+
 export const ifRumourExist = (item, id) =>{
     let result = "Mark as Rumour"
     if (item.hasOwnProperty('rumour')) {
