@@ -52,11 +52,11 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
       <View>
 
         <View style={{ flex: 1 }}>
-            <View style= {{flexDirection: "row", alignItems: "center" }}>
+            <View style= {{flexDirection: "row", alignItems: "center", padding:10 }}>
             <Image source={{uri: item.proPic}} style={styles.avatar} />
             <Text style={styles.name}>{item.name}</Text>
             </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingLeft:12, paddingRight:10 }}>
                 <View>
 
                     <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
@@ -89,7 +89,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
                             isLooping={false}
                             useNativeControls
                             resizeMode="cover"
-                            style={{ height: 300,  borderRadius: 5,
+                            style={{ height: 300,
                             marginVertical: 16, alignItems:'center' }}
                         />
                         
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     feedItem: {
         backgroundColor: "#FFF",
         borderRadius: 5,
-        padding: 8,
+      //  padding: 8,
 
     },
     avatar: {
@@ -182,7 +182,8 @@ const styles = StyleSheet.create({
         marginTop: 14,
         fontSize: 18,
         color: "black",
-        fontFamily: 'OldStandardTT-Regular'
+        fontFamily: 'OldStandardTT-Regular',
+        paddingLeft:10
 
     },
     text:{
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     postImage: {
         width: undefined,
         height: 300,
-        borderRadius: 5,
+       // borderRadius: 5,
         marginVertical: 16
     }
 

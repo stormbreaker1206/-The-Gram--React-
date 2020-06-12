@@ -10,14 +10,19 @@ class UserProfile extends React.Component {
 
     state={
         numberOfPost:null,
-        user: this.props.route.params.id
+        user: this.props.route.params.id,
+
     }
 
     componentDidMount() {
         getNumberOfPosts(this.state.user).then(res=>{
             this.setState({numberOfPost: res})
         })
+
+
     }
+
+
 
     Redirect = ()=> {
         this.props.navigation.navigate('HomeTabNavigator')
@@ -54,12 +59,12 @@ class UserProfile extends React.Component {
                 <View style={{flex:1, flexDirection: 'row', justifyContent:'center', alignContent:'center'}}>
                 <TouchableOpacity style={styles.follow}>
 
-                    <Text style={styles.followText}> Give Kudos</Text>
+                    <Text style={styles.followText}> Give a Kudos</Text>
                     <FontAwesome style={styles.icon}  name="thumbs-o-up" size={24} color="white" />
                     <Text style={styles.followText}> 12</Text>
                 </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.followSettings}>
+                    <TouchableOpacity  style={styles.followSettings}>
                         <Octicons name="comment" size={24} color="black" />
                     </TouchableOpacity>
 

@@ -5,7 +5,7 @@ import {getNumberOfPosts} from "../../helpers/firebaseHelpers";
 import {FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
 
 
-const Status = ({currentUser}) =>{
+const Status = ({currentUser, onPress}) =>{
     const [numberOfPost, setNumberOfPost] = React.useState(0);
 
     getNumberOfPosts(currentUser.uid).then(res=>{
@@ -25,7 +25,7 @@ const Status = ({currentUser}) =>{
 
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.followSettings}>
+            <TouchableOpacity onPress={onPress} style={styles.followSettings}>
                 <Ionicons  name="ios-more" size={24} color="black" />
             </TouchableOpacity>
 

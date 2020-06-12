@@ -17,6 +17,9 @@ class MyProfile extends React.Component{
     Redirect = ()=> {
        this.props.navigation.navigate('HomeTabNavigator')
     }
+    Navigation =()=>{
+        this.props.navigation.navigate('Settings')
+    }
     render() {
 
        
@@ -25,7 +28,7 @@ class MyProfile extends React.Component{
             <ScrollView style={styles.container}>
 
             <ProfileHeader onPress={this.Redirect} />
-            <Status/>
+            <Status onPress={this.Navigation}/>
             <Posts/>
 
 

@@ -1,9 +1,9 @@
 import React from "react";
-import {Image, StyleSheet, Text, View} from "react-native";
+import {Image, StyleSheet, Text, View, TouchableWithoutFeedback} from "react-native";
 import {Card,CardItem,Left, Right,} from "native-base";
 import {Entypo, Octicons, FontAwesome5} from "@expo/vector-icons";
 import {connect} from 'react-redux';
-const CardList = ({item, currentUser})=>{
+const CardList = ({item, currentUser, navigation})=>{
     return(
             <View>
             {item.key === currentUser.uid ? (null) : (
@@ -24,7 +24,9 @@ const CardList = ({item, currentUser})=>{
                 </Left>
 
                 <Right>
+                   <TouchableWithoutFeedback onPress={()=>navigation.navigate('Chat', {id: item.key})}>
                 <Octicons name="comment" size={24} color="black" />
+                   </TouchableWithoutFeedback>
                 </Right>
                 </CardItem>
 

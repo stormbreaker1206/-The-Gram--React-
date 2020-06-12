@@ -56,7 +56,6 @@ class FriendList extends React.Component {
     }
 
 
-
     getUsers = async () => {
 
         try {
@@ -80,13 +79,14 @@ class FriendList extends React.Component {
 
     render() {
         const { search } = this.state;
+        const {navigation} = this.props
         return (
 
 
             <Container >
                 <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity style={styles.Touch}
-                                      onPress={this.props.onPress}>
+                                      onPress={()=>navigation.navigate('HomeTabNavigator')}>
                         <Ionicons name="ios-arrow-back" size={24} color="black"/>
                     </TouchableOpacity>
 
@@ -110,7 +110,7 @@ class FriendList extends React.Component {
                             this.state.filterData.map((user)=>{
                                 return(
 
-                                    <CardList item={user} key={user.key}/>
+                                    <CardList navigation={navigation} item={user} key={user.key}/>
                                 )
 
                             })
@@ -130,7 +130,6 @@ class FriendList extends React.Component {
 
 
 }
-
 
 export default FriendList;
 

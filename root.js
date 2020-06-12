@@ -27,6 +27,7 @@ import { YellowBox } from 'react-native';
 import _ from 'lodash';
 import UserProfile from "./screens/mainScreen/UserProfile";
 import Comment from "./screens/mainScreen/Comment";
+import Chat from "./screens/mainScreen/Chat";
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -268,10 +269,25 @@ const HomeStackNavigator = ({navigation}) => (
             <Stack.Screen name="Comment" options={{ title: '', headerShown: false }} component={Comment}/>
             <Stack.Screen name='UserProfile' options={{title: '', headerShown: false}} component={UserProfile}/>
 
+
             
     </Stack.Navigator>
 )
 
+const ChatNavigator =()=>(
+
+    <Stack.Navigator >
+
+        <Stack.Screen
+            options={{title: '', headerShown: false}}
+            name="Friends" component={Friends}/>
+
+        <Stack.Screen name='Chat' options={{title: '', headerShown: false}} component={Chat}/>
+
+
+    </Stack.Navigator>
+
+)
 
 
 const AppDrawerNavigator = () => (
@@ -290,10 +306,10 @@ const AppDrawerNavigator = () => (
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-contact" size={24} />}} name="MyProfile" component={MyProfile} />
         <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons color='black' name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} />
         <Drawer.Screen options={
-            {drawerIcon: ()=> <Ionicons color='black' name="ios-contacts" size={24} />, drawerLabel:'Grammers'}
+                      {drawerIcon: ()=> <Ionicons color='black' name="ios-contacts" size={24} />, drawerLabel:'Grammers'}
 
 
-        } name="Friends"  component={Friends}/>
+        } name="Friends"  component={ChatNavigator}/>
 
     </Drawer.Navigator>
 );

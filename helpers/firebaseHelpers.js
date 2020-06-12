@@ -1,4 +1,6 @@
 import * as firebase from "firebase";
+import {getCurrentTime} from "./userUtilis";
+
 export const snapshotToArray = snapshot => {
   let returnArr = [];
   
@@ -14,6 +16,7 @@ export const snapshotToArray = snapshot => {
   return returnArr;
  
 };
+
 
 
 export const getName = async  (id) =>{
@@ -206,6 +209,44 @@ export const updateComment = async (postId, id) =>{
 
 
 }
+
+export const oneToOneChat = async (receiver, sender, messages) =>{
+
+
+    try{
+
+        for(let i = 0; i < messages.length; i++){
+
+         const  ref =  await firebase.database().ref('messages').child(receiver).child(sender)
+              .push({_id: messages[i]._id, text: messages[i].text, createdAt: Date.now(), user: messages[i].user});
+
+        }
+
+    }catch (e){
+        console.log(e)
+    }
+
+
+}
+
+export const oneToOneSender = async (sender,receiver, messages) =>{
+
+    try{
+
+        for(let i = 0; i < messages.length; i++){
+
+            const  ref =  await firebase.database().ref('messages').child(sender).child(receiver)
+                .push({_id: messages[i]._id, text: messages[i].text, createdAt: Date.now(), user: messages[i].user});
+
+        }
+
+    }catch (e){
+        console.log(e)
+    }
+
+
+}
+
 
 export const getNumberOfPosts = async (id) =>{
     let results = ""

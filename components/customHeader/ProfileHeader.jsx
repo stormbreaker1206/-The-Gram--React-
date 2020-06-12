@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, StatusBar, Text, View, Dimensions, TextInput, ScrollView, Image, ActivityIndicator, TouchableOpacity, TouchableHighlight} from 'react-native';
+import {StyleSheet, StatusBar, Text, View, Dimensions, TextInput, ScrollView, Image, ActivityIndicator, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
 import {Spinner} from 'native-base'
 import {Ionicons} from "@expo/vector-icons";
 import {MaterialIcons} from "@expo/vector-icons";
@@ -19,7 +19,7 @@ class ProfileHeader extends React.Component{
 
     }
 
-    test = async (downloadUrl)=>{
+    updatePostProPic = async (downloadUrl)=>{
         await firebase.database().ref('posts').orderByChild('id').equalTo(this.props.auth.currentUser.uid)
             .on('value' , (snapshot)=>{
                 //console.log(snapshot.val())
@@ -66,7 +66,7 @@ class ProfileHeader extends React.Component{
                   .ref('users').child(id)
                   .update({image: downloadUrl });
 
-                    await this.test(downloadUrl)
+                    await this.updatePostProPic(downloadUrl)
 
             
                   this.setState({isLoading: false})
@@ -94,7 +94,7 @@ class ProfileHeader extends React.Component{
                 <View style={styles.wallerPaper}>
                     <Image source={{uri: this.props.auth.currentUserData.image}} resizeMode='cover' style={{width:'100%', height:200}}/>
                 </View>
-                <TouchableOpacity onPress={this.openImageLibrary}>
+                <TouchableWithoutFeedback onPress={this.openImageLibrary}>
                 <View style={styles.imageContainer}>
                     <View style={styles.check}>
 
@@ -119,7 +119,7 @@ class ProfileHeader extends React.Component{
                     
                    
                 </View>
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
                 <View>
 
                 </View>

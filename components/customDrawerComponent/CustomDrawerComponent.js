@@ -23,6 +23,7 @@ class CustomDrawerComponent extends Component {
         this.getUserData()
         getNumberOfPosts(this.props.currentUser.uid).then(res=>{
             this.setState({numberOfPost: res})
+
         })
 
     }
