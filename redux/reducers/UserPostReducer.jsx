@@ -2,7 +2,8 @@ const initialState = {
 
     post: null,
     postData: null,
-    userPostData: null
+    userPostData: null,
+    isLoading: true,
 }
 
 const userPostData = (state = initialState, action) => {
@@ -16,6 +17,7 @@ const userPostData = (state = initialState, action) => {
         case "GET_POST_DATA":
             return {
                 ...state,
+                isLoading: false,
                 postData: action.payload
             }
         case  "GET_USER_POST_ID":

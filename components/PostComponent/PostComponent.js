@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from "react-native";
+import {View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ActivityIndicator} from "react-native";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import moment from "moment";
 import {Video} from "expo-av";
@@ -133,91 +133,100 @@ class PostComponent extends React.Component{
 
 
           return (
+<View>
+              {this.props.isLoading ? (
+                  <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>
+              ): (
+
+                  <View style={styles.feedItem}>
 
 
-        <View style={styles.feedItem}>
+                      <View>
+
+                          <View style={{ flex: 1 }}>
+
+                              <TouchableOpacity onPress={()=>this.viewProfile(item.id)}>
+
+                                  <View style= {{flexDirection: "row", alignItems: "center" , padding:10}}>
+                                      <Image source={{uri: item.proPic}} style={styles.avatar} />
+                                      <Text style={styles.name}>{item.name}</Text>
+                                  </View>
+                              </TouchableOpacity>
+                              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingLeft:12, paddingRight:10 }}>
+                                  <View>
+
+                                      <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
+                                  </View>
+                                  <TouchableOpacity onPress={()=>this.settings(item, this.state.uid, isRumourExist, isAuthenticExist)}>
+                                      <Ionicons name="ios-more" size={24} color="#73788B" />
+                                  </TouchableOpacity>
+
+                              </View>
+                              {item.type === "text" ? (
+                                  <Text style={styles.post}>{item.status}</Text>
+
+                              ): (
+                                  <View>
+                                      <Text style={styles.post}>{item.status}</Text>
+                                      {item.type === "video" ? (
 
 
-              <View>
+                                          <Video
 
-                <View style={{ flex: 1 }}>
+                                              source={item.image ? {uri: item.image } : null}
+                                              posterSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
+                                              rate={1.0}
+                                              volume={1.0}
+                                              isMuted={false}
+                                              shouldPlay={false}
+                                              isLooping={false}
+                                              useNativeControls
+                                              resizeMode="cover"
+                                              style={{ height: 300,
+                                                  marginVertical: 16, alignItems:'center' }}
+                                          />
 
-                    <TouchableOpacity onPress={()=>this.viewProfile(item.id)}>
+                                      ): (
+                                          <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={item} user={this.state.uid} userLikedPost={userLikedPost} postId={item.key} />}>
+                                              <Image  source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
 
-                    <View style= {{flexDirection: "row", alignItems: "center" , padding:10}}>
-                    <Image source={{uri: item.proPic}} style={styles.avatar} />
-                    <Text style={styles.name}>{item.name}</Text>
-                    </View>
-                    </TouchableOpacity>
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingLeft:12, paddingRight:10 }}>
-                        <View>
+                                          </Lightbox>
+                                      )}
+                                  </View>
 
-                            <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
-                        </View>
-                        <TouchableOpacity onPress={()=>this.settings(item, this.state.uid, isRumourExist, isAuthenticExist)}>
-                        <Ionicons name="ios-more" size={24} color="#73788B" />
-                        </TouchableOpacity>
+                              )}
 
-                    </View>
-                    {item.type === "text" ? (
-                        <Text style={styles.post}>{item.status}</Text>
+                              <View style={{flex:1}}>
+                                  <View style={{ flexDirection: "row", paddingLeft: 8 }}>
+                                      <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkLikesCount(item)}</Text>
+                                      <TouchableOpacity onPress={()=> updateLike(item, this.state.uid)}>
+                                          <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
+                                      </TouchableOpacity>
+                                      <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkCommentsCount(item)}</Text>
+                                      <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment', {id : item.key})}>
+                                          <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
+                                      </TouchableOpacity>
 
-                    ): (
-                        <View>
-                            <Text style={styles.post}>{item.status}</Text>
-                            {item.type === "video" ? (
-
-
-                                <Video
-
-                                    source={item.image ? {uri: item.image } : null}
-                                    posterSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
-                                    rate={1.0}
-                                    volume={1.0}
-                                    isMuted={false}
-                                    shouldPlay={false}
-                                    isLooping={false}
-                                    useNativeControls
-                                    resizeMode="cover"
-                                    style={{ height: 300,
-                                    marginVertical: 16, alignItems:'center' }}
-                                />
-
-                            ): (
-                                <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={item} user={this.state.uid} userLikedPost={userLikedPost} postId={item.key} />}>
-                               <Image  source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
-
-                                </Lightbox>
-                            )}
-                        </View>
-
-                    )}
-
-                    <View style={{flex:1}}>
-                    <View style={{ flexDirection: "row", paddingLeft: 8 }}>
-                    <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkLikesCount(item)}</Text>
-                        <TouchableOpacity onPress={()=> updateLike(item, this.state.uid)}>
-                        <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
-                        </TouchableOpacity>
-                        <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkCommentsCount(item)}</Text>
-                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment', {id : item.key})}>
-                        <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
-                        </TouchableOpacity>
-
-                        <View style={{ flexDirection: "row", flex:1, marginLeft:80, paddingLeft: 8, paddingBottom:5, justifyContent:'space-evenly', alignItems:'center', }}>
+                                      <View style={{ flexDirection: "row", flex:1, marginLeft:80, paddingLeft: 8, paddingBottom:5, justifyContent:'space-evenly', alignItems:'center', }}>
 
 
 
-                            <Text style={styles.text}>{checkRumourCount(item)} Rumour</Text>
-                            <Text style={styles.text}>{checkAuthenticCount(item)} Authentic</Text>
+                                          <Text style={styles.text}>{checkRumourCount(item)} Rumour</Text>
+                                          <Text style={styles.text}>{checkAuthenticCount(item)} Authentic</Text>
 
 
-                        </View>
-                    </View>
-                    </View>
-                </View>
-            </View>
-            </View>
+                                      </View>
+                                  </View>
+                              </View>
+                          </View>
+                      </View>
+                  </View>
+              )}
+
+
+
+
+</View>
         );
     };
 
@@ -303,6 +312,13 @@ const styles = StyleSheet.create({
         height: 300,
       //  borderRadius: 5,
         marginVertical: 16
+    },
+
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
     }
 
 });

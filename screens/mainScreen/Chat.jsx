@@ -10,10 +10,10 @@ import {
     KeyboardAvoidingView,
     Platform, ScrollView
 } from "react-native";
-import {Container, Left, Right, Body, Header, Content, Footer, Item, Input, Spinner} from "native-base";
-import {Ionicons, Entypo} from "@expo/vector-icons";
+import {Container, Icon, Left, Right, Body, Header, Content, Footer, Item, Input, Spinner} from "native-base";
+import {Ionicons, } from "@expo/vector-icons";
 import * as firebase from "firebase";
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, Composer, InputToolbar   } from 'react-native-gifted-chat'
 import {oneToOneChat, oneToOneSender, snapshotToArray} from "../../helpers/firebaseHelpers";
 class Chat extends React.Component{
     state={
@@ -30,6 +30,16 @@ class Chat extends React.Component{
        this.getData()
    }
 
+    renderComposer = (props) => (
+        <Composer
+            {...props}
+            textInputStyle={{
+               borderRadius: 5,
+               marginLeft: 0,
+               fontFamily: "OldStandardTT-Regular"
+            }}
+        />
+    );
 
    getData = async ()=>{
         try {
@@ -59,6 +69,19 @@ class Chat extends React.Component{
         )
     }
 
+     customSystemMessage = props => {
+        return (
+            <View>
+                <Icon name="lock" color="#9d9d9d" size={16} />
+                <Text>
+                    Your chat is secured. Remember to be cautious about what you share
+                    with others.
+                </Text>
+            </View>
+        );
+    };
+
+
     getUserInfo = async ()=>{
 
         this.setState({isLoaded:true})
@@ -86,24 +109,34 @@ class Chat extends React.Component{
                             <TouchableOpacity onPress={()=>this.props.navigation.goBack()}>
                                 <Ionicons style={{padding:5, marginTop: 5}} color='black'  name="ios-arrow-back" size={32} />
                             </TouchableOpacity>
+
                             <View style={{flexDirection:'row', paddingLeft:10, justifyContent:'center', alignContent:'center'}}>
 
                                 <Image source={{uri: this.state.data.image }}  style={styles.avatar}></Image>
                                 <View style={{flexDirection:'column'}}>
+
                                     <Text style={styles.text}>{this.state.data.handle}</Text>
+
                                     <Text style={styles.status}>Active 12 min ago</Text>
                                 </View>
 
+
+
                             </View>
 
+                            <TouchableOpacity style={{position:'absolute', top:5, left:340}}  onPress={()=>this.props.navigation.goBack()}>
+                                <Ionicons style={{padding:5, marginTop: 5}} name="ios-more" size={24} color="#73788B" />
+                            </TouchableOpacity>
+
                         </View>
+
 
 
 
                         </View>
 
                 <GiftedChat
-
+                    inverted={false}
                     messages={this.state.messages}
                     onSend={messages => this.onSend(messages)}
                     user={{
@@ -113,10 +146,13 @@ class Chat extends React.Component{
 
                     }}
 
+                    renderComposer={props =>this.renderComposer(props)}
+                    messagesContainerStyle={{ backgroundColor: 'white' }}
                     renderBubble={props => {
                         return (
                             <Bubble
                                 {...props}
+                                i
 
                                 textStyle={{
                                     right: {
@@ -126,10 +162,18 @@ class Chat extends React.Component{
 
                                     },
                                     left: {
-
+                                        color: '#73788B',
                                         fontFamily: "OldStandardTT-Regular",
 
                                     },
+
+                                }}
+
+                                wrapperStyle={{
+                                    left: {
+                                      marginTop:10
+                                    },
+
                                 }}
 
                             />
@@ -156,6 +200,7 @@ export default connect(mapStateToProps)(Chat)
 const styles = StyleSheet.create({
     container:{
         flex:1,
+        backgroundColor:'white'
 
      },
     inputText:{

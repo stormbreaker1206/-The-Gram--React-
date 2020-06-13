@@ -70,15 +70,16 @@ class UserFeed extends React.Component{
         return (
             <View style={styles.container}>
 
-                <PostComponent data={this.props.postData} user={this.props.currentUser} navigation={this.props.navigation}/>
+                <PostComponent data={this.props.postData} isLoading={this.props.isLoading} user={this.props.currentUser} navigation={this.props.navigation}/>
             </View>
         );
     }
 }
 
-const mapStateToProps = ({auth: {currentUser}, userPostData:{postData}}) => ({
+const mapStateToProps = ({auth: {currentUser}, userPostData:{postData, isLoading}}) => ({
     currentUser,
     postData,
+    isLoading
 
 
 })
