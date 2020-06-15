@@ -28,6 +28,7 @@ import _ from 'lodash';
 import UserProfile from "./screens/mainScreen/UserProfile";
 import Comment from "./screens/mainScreen/Comment";
 import Chat from "./screens/mainScreen/Chat";
+import UserChatSettings from "./screens/chatSettings/userChatSettings";
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -247,7 +248,7 @@ const HomeStackNavigator = ({navigation}) => (
 
         ),
         headerRight:() =>(
-            <Ionicons onPress={() => navigation.navigate('Messages')} name="ios-chatboxes" size={30}  style={{marginRight:10}} color='black' />
+            <Ionicons onPress={() => navigation.navigate('Friends')} name="ios-chatboxes" size={30}  style={{marginRight:10}} color='black' />
         )
     }}>
         <Stack.Screen
@@ -283,6 +284,7 @@ const ChatNavigator =()=>(
             name="Friends" component={Friends}/>
 
         <Stack.Screen name='Chat' options={{title: '', headerShown: false}} component={Chat}/>
+        <Stack.Screen name='UserChatSettings' options={{title: '', headerShown: false}} component={UserChatSettings}/>
 
 
     </Stack.Navigator>
@@ -304,9 +306,9 @@ const AppDrawerNavigator = () => (
     >
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-home" size={24} />}} name="Home" component={HomeStackNavigator} />
         <Drawer.Screen options={{drawerIcon: ()=> <Ionicons color='black' name="ios-contact" size={24} />}} name="MyProfile" component={MyProfile} />
-        <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons color='black' name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} />
+        {/* <Drawer.Screen  options={{drawerIcon: ()=> <Ionicons color='black' name="ios-chatboxes" size={24} />}} name="Messages" component={Messages} /> */}
         <Drawer.Screen options={
-                      {drawerIcon: ()=> <Ionicons color='black' name="ios-contacts" size={24} />, drawerLabel:'Grammers'}
+                      {drawerIcon: ()=> <Ionicons color='black' name="ios-chatboxes" size={24} />, drawerLabel:'Messages'}
 
 
         } name="Friends"  component={ChatNavigator}/>

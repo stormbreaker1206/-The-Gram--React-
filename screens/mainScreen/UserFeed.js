@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, FlatList } from "react-native";
+import {View, Text, StyleSheet, Image, FlatList, ActivityIndicator} from "react-native";
 import {connect} from 'react-redux';
 import * as firebase from "firebase";
 import PostComponent from "../../components/PostComponent/PostComponent";
@@ -70,7 +70,13 @@ class UserFeed extends React.Component{
         return (
             <View style={styles.container}>
 
-                <PostComponent data={this.props.postData} isLoading={this.props.isLoading} user={this.props.currentUser} navigation={this.props.navigation}/>
+                {this.props.isLoading ? (
+                    <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>
+                ): (
+
+                <PostComponent data={this.props.postData}  user={this.props.currentUser} navigation={this.props.navigation}/>
+                    )}
+
             </View>
         );
     }
@@ -118,6 +124,13 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: "500"
+    },
+
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
     }
 
 });

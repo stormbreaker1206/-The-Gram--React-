@@ -3,14 +3,20 @@ import {StyleSheet, StatusBar, Text, View, TextInput, Image, ActivityIndicator, 
 import {Ionicons} from "@expo/vector-icons";
 import Header from "../../components/customHeader/Header";
 
-const Messages = (props)=> {
+const Messages = ({navigation})=> {
 
     const Redirect = ()=> {
-        props.navigation.navigate('Home')
+        navigation.navigate('Home')
     }
 
     return(
+        <View style={{flex:1}}>
        <Header onPress={Redirect} name='create' text='Messaging'/>
+
+       <TouchableOpacity onPress={()=>navigation.push('Chat')} style={{flex:1}}>
+           <Text>test</Text>
+       </TouchableOpacity>
+        </View>
     )
 }
 

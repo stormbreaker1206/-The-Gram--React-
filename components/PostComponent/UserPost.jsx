@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import moment from "moment";
@@ -9,7 +9,8 @@ import {connect} from 'react-redux';
 import {updateLike} from '../../helpers/firebaseHelpers'
 import { compose } from 'redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
+
+const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
 
     const userlike = checkLikes(item, auth.currentUser.uid);
     let userLikedPost = '';
@@ -20,6 +21,10 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
     }else{
          userLikedPost = 'ios-heart-empty';
          iconColor = 'black';
+    }
+
+    const showModal = ()=>{
+        setModalVisible(!modalVisible)
     }
 
    const settings = ()=>{
@@ -45,10 +50,11 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
     }
 
     return(
+
+        <View>
+
         <View style={styles.feedItem}>
-           
-                
-        
+
       <View>
 
         <View style={{ flex: 1 }}>
@@ -113,8 +119,9 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
                 
                 </TouchableOpacity>
                 <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkCommentsCount(item)}</Text>
+                <TouchableOpacity onPress={()=>navigation.navigate('Comment', {id: item.key})}>
                 <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
-
+                </TouchableOpacity>
                 <View style={{ flexDirection: "row", flex:1, marginLeft:80, paddingLeft: 8, paddingBottom:5, justifyContent:'space-evenly', alignItems:'center', }}>
 
 
@@ -128,7 +135,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions} ) =>{
         </View>
     </View>
     </View>
-
+        </View>
     )
 
 }

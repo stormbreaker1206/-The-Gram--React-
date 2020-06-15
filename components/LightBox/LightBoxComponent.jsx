@@ -16,6 +16,7 @@ state ={
 }
 componentDidMount() {
    this.getComment()
+
 }
 
     getComment = async () => {
@@ -28,7 +29,6 @@ componentDidMount() {
                 const postArray = snapshotToArray(snapshot)
                 let list = postArray.filter(x => x.postId === this.props.postId)
                 this.setState({data: list.reverse()})
-
 
             });
 

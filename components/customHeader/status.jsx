@@ -3,14 +3,32 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {connect} from 'react-redux';
 import {getNumberOfPosts} from "../../helpers/firebaseHelpers";
 import {FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
-
-
-const Status = ({currentUser, onPress}) =>{
+import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { compose } from 'redux';
+const Status = ({currentUser, onPress, showActionSheetWithOptions}) =>{
     const [numberOfPost, setNumberOfPost] = React.useState(0);
 
     getNumberOfPosts(currentUser.uid).then(res=>{
         setNumberOfPost(res)
     })
+
+    const _onOpenActionSheet = () => {
+        // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
+        const options = ['Turn on Privacy', 'Change Username', 'Block', 'Cancel'];
+
+        const cancelButtonIndex = 3;
+
+        showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+
+            },
+            buttonIndex => {
+                // Do something here depending on the button index selected
+            },
+        );
+    };
 
     return(
 
@@ -25,7 +43,7 @@ const Status = ({currentUser, onPress}) =>{
 
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={onPress} style={styles.followSettings}>
+            <TouchableOpacity onPress={_onOpenActionSheet} style={styles.followSettings}>
                 <Ionicons  name="ios-more" size={24} color="black" />
             </TouchableOpacity>
 
@@ -41,7 +59,12 @@ const mapStateToProps = ({auth: {currentUser}}) => ({
     currentUser,
 
 })
-export default connect(mapStateToProps) (Status)
+
+const wrapper = compose(
+    connect(mapStateToProps),
+    connectActionSheet
+);
+export default wrapper (Status)
 
 const styles = StyleSheet.create({
     container:{

@@ -1,16 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity, ScrollView} from 'react-native';
-import {Ionicons, FontAwesome, Octicons} from "@expo/vector-icons";
+import {StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native';
+import {Ionicons, FontAwesome, Octicons, AntDesign, Feather} from "@expo/vector-icons";
 import {connect} from 'react-redux';
 import * as firebase from "firebase";
-import {getNumberOfPosts, snapshotToArray} from "../../helpers/firebaseHelpers";
+import { connectActionSheet } from '@expo/react-native-action-sheet';
+import {getNumberOfPosts,} from "../../helpers/firebaseHelpers";
 import UserPost from "../../components/PostComponent/UserPost";
+import { compose } from 'redux';
 
 class UserProfile extends React.Component {
 
     state={
         numberOfPost:null,
         user: this.props.route.params.id,
+        isPrivate: false,
 
     }
 
@@ -23,6 +26,24 @@ class UserProfile extends React.Component {
     }
 
 
+    _onOpenActionSheet = () => {
+        // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
+        const options = ['Give a Kudos', 'Report', 'Block', 'Cancel'];
+
+        const cancelButtonIndex = 3;
+
+        this.props.showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+
+            },
+            buttonIndex => {
+                // Do something here depending on the button index selected
+            },
+        );
+    };
+
 
     Redirect = ()=> {
         this.props.navigation.navigate('HomeTabNavigator')
@@ -30,53 +51,88 @@ class UserProfile extends React.Component {
 
    render(){
       return(
-        <ScrollView>
-            <View style={styles.centeredView}>
-                <TouchableOpacity
-                    onPress={this.Redirect}
-                >
-                    <View style={styles.header}>
+        <View style={{flex:1}}>
+
+            {this.props.userLoaded ? (
+                <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>
+            ): (
+
+                <View style={{flex:1}}>
+
+                {this.state.isPrivate ? (
+                        <View style={{flex:1}}>
+                            <View style={styles.header}>
+
+                                <TouchableOpacity style={{flexDirection:'row', justifyContent: 'space-between', flex:1}} onPress={this.Redirect}>
+                                    <Ionicons color='black'  name="ios-arrow-back" size={24} />
+                                    <Text style={styles.textStyle}>{this.props.userPostData.handle}</Text>
+                                    <Text></Text>
+                                </TouchableOpacity>
+
+                            </View>
 
 
-                        <Ionicons color='black'  name="ios-arrow-back" size={24} />
+                            <View style={{flexDirection:'column', justifyContent:'center', alignContent:'center', marginTop:60}}>
+
+                                <AntDesign style={{alignSelf: 'center'}} name="lock" size={32} color="black" />
+
+                                <Text style={{fontSize:24, textAlign:'center', fontFamily: 'OldStandardTT-Regular'}}>This Profile is Private</Text>
 
 
-                        <Text style={styles.textStyle}>{this.props.userPostData.handle}</Text>
-                        <Text></Text>
-
-                    </View>
-                </TouchableOpacity>
-
-                <View style={styles.wallerPaper}>
-                    <Image source={{uri: this.props.userPostData.image }} resizeMode='cover' style={{width:'100%', height:200}}/>
-                </View>
-                <View style={styles.imageContainer}>
-                    <Image source={{uri: this.props.userPostData.image }} style={styles.circleImage}/>
-                </View>
+                            </View>
 
 
-
-                <View style={{flex:1, flexDirection: 'row', justifyContent:'center', alignContent:'center'}}>
-                <TouchableOpacity style={styles.follow}>
-
-                    <Text style={styles.followText}> Give a Kudos</Text>
-                    <FontAwesome style={styles.icon}  name="thumbs-o-up" size={24} color="white" />
-                    <Text style={styles.followText}> 12</Text>
-                </TouchableOpacity>
-
-                    <TouchableOpacity  style={styles.followSettings}>
-                        <Octicons name="comment" size={24} color="black" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.followSettings}>
-                        <Ionicons  name="ios-more" size={24} color="black" />
-                    </TouchableOpacity>
+                        </View>
+                    ): (
+                        <ScrollView>
 
 
-                </View>
+                            <View style={styles.centeredView}>
+                                <TouchableOpacity
+                                    onPress={this.Redirect}
+                                >
+                                    <View style={styles.header}>
 
 
-                {/* <View style={styles.container}>
+                                        <Ionicons color='black'  name="ios-arrow-back" size={24} />
+
+
+                                        <Text style={styles.textStyle}>{this.props.userPostData.handle}</Text>
+                                        <Text></Text>
+
+                                    </View>
+                                </TouchableOpacity>
+
+                                <View style={styles.wallerPaper}>
+                                    <Image source={{uri: this.props.userPostData.image }} resizeMode='cover' style={{width:'100%', height:200}}/>
+                                </View>
+                                <View style={styles.imageContainer}>
+                                    <Image source={{uri: this.props.userPostData.image }} style={styles.circleImage}/>
+                                </View>
+
+
+
+                                <View style={{flex:1, flexDirection: 'row', justifyContent:'center', alignContent:'center'}}>
+                                    <TouchableOpacity style={styles.follow}>
+
+                                        <Text style={styles.followText}> Give a Kudos</Text>
+                                        <FontAwesome style={styles.icon}  name="thumbs-o-up" size={24} color="white" />
+                                        <Text style={styles.followText}> 12</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity  style={styles.followSettings}>
+                                        <Octicons name="comment" size={24} color="black" />
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity onPress={()=>this._onOpenActionSheet()} style={styles.followSettings}>
+                                        <Ionicons  name="ios-more" size={24} color="black" />
+                                    </TouchableOpacity>
+
+
+                                </View>
+
+
+                                {/* <View style={styles.container}>
                     <View style={styles.statContainer}>
                         <Text style={styles.number}>12k</Text>
                         <Text style={styles.stat}>Grammers</Text>
@@ -91,27 +147,34 @@ class UserProfile extends React.Component {
                     </View>
 
                 </View> */}
-                <View style={{flex:1, justifyContent:'center', alignContent:'center', marginTop: 8}}>
+                                <View style={{flex:1, justifyContent:'center', alignContent:'center', marginTop: 8}}>
 
-                    <Text style={styles.postText}>Posts</Text>
+                                    <Text style={styles.postText}>Posts</Text>
 
 
-                    <View>
-                        {this.props.post.map((posts) =>{
-                            return  (
+                                    <View>
+                                        {this.props.post.map((posts) =>{
+                                            return  (
 
-                                <UserPost item={posts} key={posts.key}/>
+                                                <UserPost navigation={this.props.navigation} item={posts} key={posts.key}/>
 
-                            );
+                                            );
 
-                        })}
-                    </View>
+                                        })}
+                                    </View>
 
+
+                                </View>
+
+                            </View>
+                        </ScrollView>
+                    )}
 
                 </View>
 
-            </View>
-        </ScrollView>
+            )}
+
+        </View>
     );
 }
 
@@ -120,12 +183,20 @@ class UserProfile extends React.Component {
 
 }
 
-const mapStateToProps = ({userPostData: {userPostData, post}}) => ({
+
+
+const mapStateToProps = ({userPostData: {userPostData, post, userLoaded}}) => ({
     userPostData,
-    post
+    post,
+    userLoaded
 
 })
-export default connect(mapStateToProps) (UserProfile);
+
+const wrapper = compose(
+    connect(mapStateToProps),
+    connectActionSheet
+);
+export default wrapper (UserProfile);
 
 const styles = StyleSheet.create({
     centeredView: {
@@ -274,5 +345,11 @@ const styles = StyleSheet.create({
         bottom: 0,
         borderColor: 'white',
         borderWidth:5,
+    },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
     }
 })

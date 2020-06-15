@@ -6,19 +6,21 @@ import {
     TouchableOpacity,
     View,
     Image,
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform, ScrollView
+
 } from "react-native";
-import {Container, Icon, Left, Right, Body, Header, Content, Footer, Item, Input, Spinner} from "native-base";
+import {Icon} from "native-base";
 import {Ionicons, } from "@expo/vector-icons";
 import * as firebase from "firebase";
-import { GiftedChat, Bubble, Composer, InputToolbar   } from 'react-native-gifted-chat'
+import { GiftedChat } from 'react-native-gifted-chat';
+import { compose } from 'redux';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
+import {renderInputToolbar, renderComposer, renderBubble, renderSend} from "../../helpers/chatStyles";
 import {oneToOneChat, oneToOneSender, snapshotToArray} from "../../helpers/firebaseHelpers";
+
 class Chat extends React.Component{
     state={
         id: this.props.route.params.id,
-        screen: this.props.route.params.screen,
+        //screen: this.props.route.params.screen,
         data: {},
         isLoaded: false,
         messages: null
@@ -30,16 +32,6 @@ class Chat extends React.Component{
        this.getData()
    }
 
-    renderComposer = (props) => (
-        <Composer
-            {...props}
-            textInputStyle={{
-               borderRadius: 5,
-               marginLeft: 0,
-               fontFamily: "OldStandardTT-Regular"
-            }}
-        />
-    );
 
    getData = async ()=>{
         try {
@@ -69,17 +61,24 @@ class Chat extends React.Component{
         )
     }
 
-     customSystemMessage = props => {
-        return (
-            <View>
-                <Icon name="lock" color="#9d9d9d" size={16} />
-                <Text>
-                    Your chat is secured. Remember to be cautious about what you share
-                    with others.
-                </Text>
-            </View>
+    _onOpenActionSheet = () => {
+        // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
+        const options = ['Delete Chat', 'Turn on auto delete', 'Block', 'Cancel'];
+
+        const cancelButtonIndex = 3;
+
+        this.props.showActionSheetWithOptions(
+            {
+                options,
+                cancelButtonIndex,
+
+            },
+            buttonIndex => {
+                // Do something here depending on the button index selected
+            },
         );
     };
+
 
 
     getUserInfo = async ()=>{
@@ -102,6 +101,7 @@ class Chat extends React.Component{
     render() {
 
         return(
+
             <View style={styles.container}>
 
                   <View>
@@ -124,7 +124,7 @@ class Chat extends React.Component{
 
                             </View>
 
-                            <TouchableOpacity style={{position:'absolute', top:5, left:340}}  onPress={()=>this.props.navigation.goBack()}>
+                            <TouchableOpacity style={{position:'absolute', top:5, left:320}}  onPress={()=>this._onOpenActionSheet()}>
                                 <Ionicons style={{padding:5, marginTop: 5}} name="ios-more" size={24} color="#73788B" />
                             </TouchableOpacity>
 
@@ -134,6 +134,8 @@ class Chat extends React.Component{
 
 
                         </View>
+
+
 
                 <GiftedChat
                     inverted={false}
@@ -145,41 +147,16 @@ class Chat extends React.Component{
                         avatar: this.props.currentUserData.image,
 
                     }}
-
-                    renderComposer={props =>this.renderComposer(props)}
-                    messagesContainerStyle={{ backgroundColor: 'white' }}
-                    renderBubble={props => {
-                        return (
-                            <Bubble
-                                {...props}
-                                i
-
-                                textStyle={{
-                                    right: {
-                                        color: 'white',
-                                        fontFamily: "OldStandardTT-Regular",
-
-
-                                    },
-                                    left: {
-                                        color: '#73788B',
-                                        fontFamily: "OldStandardTT-Regular",
-
-                                    },
-
-                                }}
-
-                                wrapperStyle={{
-                                    left: {
-                                      marginTop:10
-                                    },
-
-                                }}
-
-                            />
-                        );
-                    }}
+                    renderActions={this.renderActions}
+                    renderComposer={props =>renderComposer(props)}
+                    renderSend={renderSend}
+                    messagesContainerStyle={{ backgroundColor: 'white',paddingBottom:20 }}
+                    renderBubble={renderBubble}
+                    renderInputToolbar={renderInputToolbar}
+                    renderSystemMessage={this.customSystemMessage}
                 />
+
+
 
             </View>
 
@@ -195,7 +172,13 @@ const mapStateToProps = ({auth: {currentUser, currentUserData}}) => ({
 
 
 })
-export default connect(mapStateToProps)(Chat)
+const wrapper = compose(
+    connect(mapStateToProps),
+    connectActionSheet
+);
+
+
+export default wrapper(Chat)
 
 const styles = StyleSheet.create({
     container:{
@@ -213,7 +196,7 @@ const styles = StyleSheet.create({
         height: 60,
         marginTop: 20,
         padding:10,
-        paddingLeft:20,
+        paddingLeft: Platform.OS == 'ios'? 20: 10,
         flexDirection:'row',
        // justifyContent:'space-between'
 

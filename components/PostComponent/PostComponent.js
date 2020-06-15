@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ActivityIndicator} from "react-native";
+import {View, Text, StyleSheet, Image, FlatList, TouchableOpacity} from "react-native";
 import { Ionicons, Octicons } from "@expo/vector-icons";
 import moment from "moment";
 import {Video} from "expo-av";
@@ -133,10 +133,7 @@ class PostComponent extends React.Component{
 
 
           return (
-<View>
-              {this.props.isLoading ? (
-                  <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>
-              ): (
+
 
                   <View style={styles.feedItem}>
 
@@ -221,12 +218,8 @@ class PostComponent extends React.Component{
                           </View>
                       </View>
                   </View>
-              )}
 
 
-
-
-</View>
         );
     };
 
@@ -312,13 +305,7 @@ const styles = StyleSheet.create({
         height: 300,
       //  borderRadius: 5,
         marginVertical: 16
-    },
-
-    activityIndicator: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 80,
     }
+
 
 });

@@ -52,7 +52,7 @@ import UserPost from '../PostComponent/UserPost';
                         {this.state.postArray.map((posts) =>{
                             return  (
 
-                            <UserPost item={posts} key={posts.key}/>
+                            <UserPost navigation={this.props.navigation} item={posts} key={posts.key}/>
                                 
                             );
                             

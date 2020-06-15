@@ -50,7 +50,7 @@ class Comment extends React.Component{
 
 
     redirect = () =>{
-        this.props.navigation.navigate('HomeTabNavigator')
+        this.props.navigation.goBack()
     }
 
 

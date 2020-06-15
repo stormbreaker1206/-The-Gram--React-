@@ -1,9 +1,7 @@
 import React from 'react';
-import {StyleSheet, StatusBar, Text, View, Dimensions, TextInput, ScrollView, Image, ActivityIndicator, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
+import {StyleSheet, View, Dimensions,  Image,  TouchableWithoutFeedback} from 'react-native';
 import {Spinner} from 'native-base'
 import {Ionicons} from "@expo/vector-icons";
-import {MaterialIcons} from "@expo/vector-icons";
-import {LinearGradient} from 'expo-linear-gradient';
 import {connect} from 'react-redux';
 import * as firebase from "firebase";
 import 'firebase/storage';

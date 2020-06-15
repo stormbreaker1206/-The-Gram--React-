@@ -4,6 +4,7 @@ const initialState = {
     postData: null,
     userPostData: null,
     isLoading: true,
+    userLoaded:true
 }
 
 const userPostData = (state = initialState, action) => {
@@ -12,7 +13,8 @@ const userPostData = (state = initialState, action) => {
         case "GET_POST":
             return {
                 ...state,
-                post: action.payload
+                post: action.payload,
+                userLoaded: false
             }
         case "GET_POST_DATA":
             return {

@@ -266,6 +266,3 @@ export const getNumberOfPosts = async (id) =>{
 return results
 }
 
-
-
-

@@ -29,7 +29,7 @@ class MyProfile extends React.Component{
 
             <ProfileHeader onPress={this.Redirect} />
             <Status onPress={this.Navigation}/>
-            <Posts/>
+            <Posts navigation={this.props.navigation}/>
 
 
             </ScrollView>
