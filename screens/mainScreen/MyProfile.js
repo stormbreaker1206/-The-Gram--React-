@@ -13,29 +13,21 @@ class MyProfile extends React.Component{
    //     this.setState({postUserId: this.props.route.params.id})
    // }
 
+    Redirect =()=>{
+        this.props.navigation.navigate('HomeTabNavigator')
+    }
 
-    Redirect = ()=> {
-       this.props.navigation.navigate('HomeTabNavigator')
-    }
-    Navigation =()=>{
-        this.props.navigation.navigate('Settings')
-    }
+
     render() {
 
-       
         
         return(
-            <ScrollView style={styles.container}>
-
-            <ProfileHeader onPress={this.Redirect} />
-            <Status onPress={this.Navigation}/>
+            <ScrollView keyboardShouldPersistTaps='always' style={styles.container}>
+            <ProfileHeader navigation={this.props.navigation}  onPress={this.Redirect} />
+            <Status navigation={this.props.navigation}/>
             <Posts navigation={this.props.navigation}/>
-
-
             </ScrollView>
-
-
-              
+ 
         )
     }
 }

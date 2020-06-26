@@ -42,6 +42,27 @@ export const checkLikes = (item, id) =>{
     return likes;
 }
 
+export const checkBlock = (item, id) =>{
+    let blocked = [];
+
+    if (item.hasOwnProperty('blockedUsers')) {
+        Object.keys(item["blockedUsers"]).forEach(function(key) {
+            let block = item["blockedUsers"][key].blockedId;
+
+            if(block === id){
+                blocked.push(block)
+            }
+
+
+        });
+    }
+
+
+
+    return blocked;
+}
+
+
 export const checkAuthenticCount = (item) =>{
     let result = 0
     if (item.hasOwnProperty('authentic')) {
@@ -50,6 +71,19 @@ export const checkAuthenticCount = (item) =>{
            result++
 
        })
+    }
+
+    return result;
+}
+
+export const checkKudosCount = (item) =>{
+    let result = 0
+    if (item.hasOwnProperty('kudos')) {
+        Object.keys(item["kudos"]).forEach(function(key) {
+
+            result++
+
+        })
     }
 
     return result;
@@ -94,6 +128,32 @@ export const checkCommentsCount = (item) =>{
     return result;
 }
 
+export const checkBlockCount = (item) =>{
+    let result = 0
+    if (item.hasOwnProperty('blockedUsers')) {
+        Object.keys(item["blockedUsers"]).forEach(function(key) {
+
+            result++
+
+        })
+    }
+
+    return result;
+}
+
+export const getBlockedUsers = (item) =>{
+    let blocked = [];
+
+    if (item.hasOwnProperty('blockedUsers')) {
+        Object.keys(item["blockedUsers"]).forEach(function (key) {
+            let block = item["blockedUsers"][key].blockedId;
+            blocked.push(block)
+
+        });
+    }
+        return blocked
+}
+
 export const ifRumourExist = (item, id) =>{
     let result = "Mark as Rumour"
     if (item.hasOwnProperty('rumour')) {
@@ -102,6 +162,41 @@ export const ifRumourExist = (item, id) =>{
 
             if(rumour === id){
                 result = 'Un-Mark Rumour'
+            }
+
+
+        });
+    }
+
+
+    return result;
+}
+
+export const ifBlockExist = (item, id) =>{
+    let result = "Block"
+    if (item.hasOwnProperty('blockedUsers')) {
+        Object.keys(item["blockedUsers"]).forEach(function(key) {
+            let rumour = item["blockedUsers"][key].blockedId;
+
+            if(rumour === id){
+                result = 'Un-Block'
+            }
+
+
+        });
+    }
+
+
+    return result;
+}
+export const ifKudosExist = (item, id) =>{
+    let result = "Give a Kudos"
+    if (item.hasOwnProperty('kudos')) {
+        Object.keys(item["kudos"]).forEach(function(key) {
+            let rumour = item["kudos"][key].kudosId;
+
+            if(rumour === id){
+                result = 'Remove Kudos'
             }
 
 

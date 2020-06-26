@@ -25,7 +25,7 @@ componentDidMount() {
             const comments = await firebase.
             database()
                 .ref('comment').orderByChild('postId');
-            comments.on('value',  (snapshot) => {
+            comments.once('value',  (snapshot) => {
                 const postArray = snapshotToArray(snapshot)
                 let list = postArray.filter(x => x.postId === this.props.postId)
                 this.setState({data: list.reverse()})

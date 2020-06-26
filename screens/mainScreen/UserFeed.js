@@ -7,6 +7,7 @@ import {snapshotToArray} from "../../helpers/firebaseHelpers";
 
 
 class UserFeed extends React.Component{
+    _isMounted = false;
     state ={
         currentUserId: null,
         isLoading: false,
@@ -17,14 +18,35 @@ class UserFeed extends React.Component{
 
 
     componentDidMount() {
-        Promise.all([
-            this.getUserData(),
-            this.getPost(),
 
-        ]);
-    
+        this._isMounted = true;
+        if (this._isMounted) {
+            Promise.all([
+                this.getUserData(),
+                this.getPost(),
+                this.getUserSettings()
+
+            ]);
+        }
     }
+componentWillUnmount() {
+    this._isMounted = false;
 
+}
+
+    getUserSettings = async () => {
+        try {
+            const currentUseSettings = await  firebase.database().ref('users')
+                .on('value', (snapshot) =>{
+                    const postArray = snapshotToArray(snapshot)
+                    this.props.GetUserSettings(postArray)
+                })
+        }catch (e) {
+            console.log(e)
+        }
+
+
+    }
 
     getUserData = async () => {
         try {
@@ -64,14 +86,16 @@ class UserFeed extends React.Component{
 
     }
 
+   
 
    
     render() {
+        console.log('app')
         return (
             <View style={styles.container}>
 
                 {this.props.isLoading ? (
-                    <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>
+                    <ActivityIndicator color = '#0078ff' size = "large" style = {styles.activityIndicator}/>
                 ): (
 
                 <PostComponent data={this.props.postData}  user={this.props.currentUser} navigation={this.props.navigation}/>
@@ -94,6 +118,7 @@ const mapDispatchToprops = dispatch =>{
     return{
         GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data}),
         GetPostData: data => dispatch({type: 'GET_POST_DATA', payload:data}),
+        GetUserSettings: data => dispatch({type: 'GET_SETTINGS', payload:data}),
 
 
     }

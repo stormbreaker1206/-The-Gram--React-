@@ -87,7 +87,7 @@ class FriendList extends React.Component {
                 <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity style={styles.Touch}
                                       onPress={()=>navigation.navigate('HomeTabNavigator')}>
-                        <Ionicons name="ios-arrow-back" size={24} color="black"/>
+                        <Ionicons name="ios-arrow-back" size={30} color="black"/>
                     </TouchableOpacity>
 
                     <SearchBar

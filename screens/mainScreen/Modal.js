@@ -5,6 +5,7 @@ import {Ionicons} from "@expo/vector-icons";
 import {openCamera, openImageLibrary, prepareBlob} from "../../helpers/ImageHelpers";
 import {Camera} from "expo-camera";
 import {connect} from 'react-redux';
+import VideoPlayer from '../../components/VideoComponent/Video.jsx'
 import {Video} from "expo-av";
 import * as firebase from "firebase";
 import 'firebase/storage'
@@ -399,7 +400,7 @@ class ModalView extends React.Component{
                                             <TouchableOpacity
                                                 onPress={this.Redirect}
                                             >
-                                                <Ionicons color='black' style={{paddingLeft:10}} name="ios-arrow-back" size={24} />
+                                                <Ionicons color='black' style={{paddingLeft:10}} name="ios-arrow-back" size={30} />
                                             </TouchableOpacity>
                                         </Left>
                                         <Body>
@@ -432,18 +433,13 @@ class ModalView extends React.Component{
 
                                                 <View>
 
-                                                    {this.state.video ?(     <View style={styles.imageContainer}>
-                                                        <Video
-                                                            source={this.state.image ? {uri: this.state.image } : null}
-                                                            rate={1.0}
-                                                            volume={1.0}
-                                                            isMuted={false}
-                                                            shouldPlay={false}
-                                                            isLooping={false}
-                                                            useNativeControls
-                                                            resizeMode="cover"
-                                                            style={{ height: 300,alignItems:'center' }}
-                                                        />
+                                                    {this.state.video ?(    
+                                                        
+                                                        <View style={styles.imageContainer}>
+
+                                                            <VideoPlayer item={this.state.image}/>
+                                                    
+
                                                     </View>):( <View style={styles.imageContainer}>
                                                         <Image source={this.state.image ? {uri: this.state.image } : null} style={styles.displayImage}></Image>
 

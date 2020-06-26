@@ -1,17 +1,18 @@
-import React, {useEffect} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Image, TouchableOpacity, Alert} from 'react-native';
 import {Ionicons, Octicons} from "@expo/vector-icons";
 import moment from "moment";
 import {Video} from "expo-av";
-import {checkLikesCount, checkRumourCount, checkAuthenticCount, checkCommentsCount} from "../../helpers/userUtilis";
-import {checkLikes} from "../../helpers/userUtilis";
+import {checkLikesCount, checkRumourCount, checkLikes, checkAuthenticCount, checkCommentsCount} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
-import {updateLike} from '../../helpers/firebaseHelpers'
+import {updateLike, deletePost} from '../../helpers/firebaseHelpers'
 import { compose } from 'redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
+import EditUserPost from "../EditPostComponent/EditPost";
+import VideoPlayer from '../VideoComponent/Video'
 
-const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
-
+const UserPost = ({item, auth, showActionSheetWithOptions, navigation, getData} ) =>{
+    const [Visible, setVisible] = useState(false);
     const userlike = checkLikes(item, auth.currentUser.uid);
     let userLikedPost = '';
     let iconColor = '';
@@ -23,12 +24,13 @@ const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
          iconColor = 'black';
     }
 
-    const showModal = ()=>{
-        setModalVisible(!modalVisible)
+    const editComments = ()=>{
+        setVisible(!Visible)
     }
 
-   const settings = ()=>{
-        const options = ['Delete ', 'Re-post', 'Cancel'];
+
+   const settings = (item)=>{
+        const options = ['Edit','Delete ',  'Cancel'];
         const cancelButtonIndex = 2;
 
         showActionSheetWithOptions(
@@ -41,18 +43,38 @@ const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
                 // Do something here depending on the button index selected
 
                 if(buttonIndex == 0){
-                  //  this.openImageLibrary()
+                
+                    editComments()
+
                 }else if(buttonIndex == 1){
-                   // this.openCamera()
+               createTwoButtonAlert()
                 }
             },
         );
     }
 
+    const createTwoButtonAlert = () =>
+        Alert.alert(
+            "Message",
+            "Are you sure?",
+            [
+                {
+                    text: "Cancel",
+                     style: "cancel"
+                },
+                { text: "Delete", onPress: () => deletePost(item)
+
+                }
+            ],
+            { cancelable: false }
+        );
+
     return(
 
         <View>
-
+       
+        <EditUserPost onPress={editComments} item={item}  isVisible={Visible}/>
+       
         <View style={styles.feedItem}>
 
       <View>
@@ -68,7 +90,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
                     <Text style={styles.timestamp}>{moment(item.time).fromNow()}</Text>
                 </View>
                 {auth.currentUser.uid === item.id ?(
-                    <TouchableOpacity onPress={settings}>
+                    <TouchableOpacity onPress={()=>settings(item)}>
                         <Ionicons name="ios-more" size={24} color="#73788B" />
                     </TouchableOpacity>
                 ) : null}
@@ -76,33 +98,22 @@ const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
 
             </View>
             {item.type === "text" ? (
+
                 <Text style={styles.post}>{item.status}</Text>
+
 
             ): (
                 <View>
+
                     <Text style={styles.post}>{item.status}</Text>
+
                     {item.type === "video" ? (
                        
-                     
-                        <Video
-                           
-                            source={item.image ? {uri: item.image } : null}
-                            posterSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
-                            rate={1.0}
-                            volume={1.0}
-                            isMuted={false}
-                            shouldPlay={false}
-                            isLooping={false}
-                            useNativeControls
-                            resizeMode="cover"
-                            style={{ height: 300,
-                            marginVertical: 16, alignItems:'center' }}
-                        />
+                     <VideoPlayer item={item.image}/>
                         
                     ): (
                       
-                       <Image loadingIndicatorSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
-                        source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
+                       <Image source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
                         
                     )}
                 </View>
@@ -135,6 +146,7 @@ const UserPost = ({item, auth, showActionSheetWithOptions, navigation} ) =>{
         </View>
     </View>
     </View>
+
         </View>
     )
 
@@ -202,5 +214,6 @@ const styles = StyleSheet.create({
        // borderRadius: 5,
         marginVertical: 16
     }
+
 
 });

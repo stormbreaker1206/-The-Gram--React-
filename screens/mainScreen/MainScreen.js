@@ -27,7 +27,7 @@ const MainScreen = ({signIn, GetCurrentData}) => {
     }
 
     return (
-        <View style={{ padding: 10, marginTop: 10 }}>
+        <View style={{ padding: 10, marginTop: 10, backgroundColor: 'white' , flex:1}}>
             <FirebaseRecaptchaVerifierModal
                 ref={recaptchaVerifier}
                 firebaseConfig={firebaseConfig}
@@ -135,25 +135,23 @@ const MainScreen = ({signIn, GetCurrentData}) => {
                                                        .database()
                                                        .ref('users')
                                                        .child(response.user.uid)
-                                                       .once('value', (res) =>{
+                                                       .on('value', (res) =>{
+
+                                                           if(res.exists()){
+
+                                                                 signIn(response.user)
+
+                                                           }else {
 
 
-
-                                                           if(res.val() === null){
-
-                                                               let proPic = 'https://icons.iconarchive.com/icons/artdesigner/tweet-my-web/256/gossip-birds-icon.png';
+                                                               let proPic = 'https://sm.mashable.com/mashable_in/seo/1/18439/18439_qjcp.jpg';
                                                                //store information in the database and sign in
                                                                const user =  firebase.database().ref('users')
                                                                    .child(response.user.uid).set({datJoined:getCurrentTime().toString(),
                                                                        encrypted:randomName(5), handle:randomName(6),
-                                                                       id:response.user.uid,phone:phoneNumber, image:proPic})
+                                                                       id:response.user.uid,phone:phoneNumber, image:proPic, directMessage: true, profilePrivacy:false, notification:true, autoDelete: false})
 
-                                                               signIn(response.user)
-                                                           }else {
-                                                               //sign in if exist
-                                                              // console.log(phoneNumber)
-                                                               signIn(response.user)
-                                                              // console.log(res.val())
+                                                                 signIn(response.user)
                                                            }
                                                        })
 
@@ -236,6 +234,7 @@ const styles = StyleSheet.create({
     height: 60,
     flexDirection: 'row',
     margin: 5
+    
     },
     messageCodeContainer:{
         marginTop: 5,

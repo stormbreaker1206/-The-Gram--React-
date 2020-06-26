@@ -4,17 +4,17 @@ import {View, Text, StyleSheet,ScrollView, SafeAreaView,  Platform} from 'react-
 import {Avatar, Title,Drawer, Caption, Paragraph,} from 'react-native-paper';
 import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import {getNumberOfPosts} from "../../helpers/firebaseHelpers";
+import {checkKudosCount} from '../../helpers/userUtilis'
 //import { DrawerItems } from 'react-navigation';
 import {DrawerItemList} from "@react-navigation/drawer";
 import {connect} from 'react-redux';
 import * as firebase from "firebase";
-import {snapshotToArray} from "../../helpers/firebaseHelpers";
 class CustomDrawerComponent extends Component {
 
     state = {
         results: {},
         numberOfPost: null
-       
+
         
     }
 
@@ -23,8 +23,9 @@ class CustomDrawerComponent extends Component {
         this.getUserData()
         getNumberOfPosts(this.props.currentUser.uid).then(res=>{
             this.setState({numberOfPost: res})
-
         })
+
+        
 
     }
 
@@ -55,6 +56,11 @@ class CustomDrawerComponent extends Component {
         }
     };
     render() {
+        const getNumberOfKudos = checkKudosCount(this.state.results)
+ //       let postCount = ''
+ //     const num =  getNumberOfPosts(this.props.currentUser.uid).then(res =>{
+ //         postCount = res
+ //     })
         return (
 
             <View style={{flex:1}}>
@@ -77,7 +83,7 @@ class CustomDrawerComponent extends Component {
 
                         <View style={styles.row}>
                             <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>80</Paragraph>
+                    <Paragraph style={[styles.paragraph, styles.caption]}>{getNumberOfKudos}</Paragraph>
                                 <Caption style={styles.caption}>Kudos</Caption>
                             </View>
                             <View style={styles.section}>

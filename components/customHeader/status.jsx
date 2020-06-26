@@ -1,34 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {connect} from 'react-redux';
-import {getNumberOfPosts} from "../../helpers/firebaseHelpers";
-import {FontAwesome, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
+import {AntDesign, Ionicons, SimpleLineIcons} from "@expo/vector-icons";
 import { connectActionSheet } from '@expo/react-native-action-sheet';
+import {privacySettings} from "../../helpers/firebaseHelpers";
 import { compose } from 'redux';
-const Status = ({currentUser, onPress, showActionSheetWithOptions}) =>{
-    const [numberOfPost, setNumberOfPost] = React.useState(0);
+let settings = ''
+const Status = ({ navigation}) =>{
 
-    getNumberOfPosts(currentUser.uid).then(res=>{
-        setNumberOfPost(res)
-    })
-
-    const _onOpenActionSheet = () => {
-        // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
-        const options = ['Turn on Privacy', 'Change Username', 'Block', 'Cancel'];
-
-        const cancelButtonIndex = 3;
-
-        showActionSheetWithOptions(
-            {
-                options,
-                cancelButtonIndex,
-
-            },
-            buttonIndex => {
-                // Do something here depending on the button index selected
-            },
-        );
-    };
 
     return(
 
@@ -38,12 +17,15 @@ const Status = ({currentUser, onPress, showActionSheetWithOptions}) =>{
 
             <TouchableOpacity style={styles.follow}>
 
-                <Text style={styles.followText}> Kudos Badge</Text>
+                <Text style={styles.followText}>Level 1 Kudos Badge</Text>
                 <SimpleLineIcons style={styles.icon} name="badge" size={24} color="white" />
 
             </TouchableOpacity>
+            <TouchableOpacity  style={styles.followSettings}>
+                <AntDesign name="sharealt" size={20} color="black" />
+            </TouchableOpacity>
 
-            <TouchableOpacity onPress={_onOpenActionSheet} style={styles.followSettings}>
+            <TouchableOpacity onPress={()=>navigation.navigate('Settings')} style={styles.followSettings}>
                 <Ionicons  name="ios-more" size={24} color="black" />
             </TouchableOpacity>
 
@@ -55,16 +37,9 @@ const Status = ({currentUser, onPress, showActionSheetWithOptions}) =>{
     )
 
 }
-const mapStateToProps = ({auth: {currentUser}}) => ({
-    currentUser,
 
-})
 
-const wrapper = compose(
-    connect(mapStateToProps),
-    connectActionSheet
-);
-export default wrapper (Status)
+export default Status
 
 const styles = StyleSheet.create({
     container:{
@@ -114,7 +89,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
        alignItems:'center',
         backgroundColor:'#0078ff',
-        width:300,
+        width:250,
         height:40,
         borderRadius: 10,
         flexDirection: 'row',

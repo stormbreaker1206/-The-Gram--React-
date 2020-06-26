@@ -1,36 +1,75 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ActivityIndicator} from 'react-native';
-import {Ionicons, FontAwesome, Octicons, AntDesign, Feather} from "@expo/vector-icons";
+import React from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    ScrollView,
+    ActivityIndicator,
+    TouchableWithoutFeedback
+} from 'react-native';
+import {Ionicons, FontAwesome, AntDesign, MaterialIcons} from "@expo/vector-icons";
 import {connect} from 'react-redux';
-import * as firebase from "firebase";
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-import {getNumberOfPosts,} from "../../helpers/firebaseHelpers";
+import {ifBlockExist, ifKudosExist, checkKudosCount} from "../../helpers/userUtilis";
+import {getNumberOfPosts, blockUser, giveKudos, reportUser} from "../../helpers/firebaseHelpers";
 import UserPost from "../../components/PostComponent/UserPost";
 import { compose } from 'redux';
+import * as firebase from "firebase";
 
 class UserProfile extends React.Component {
+    _isMounted = false
 
     state={
         numberOfPost:null,
-        user: this.props.route.params.id,
-        isPrivate: false,
+        isPrivate: null,
+        kudos: null,
+        results: {},
+        screen:this.props.route.params.screen
+
 
     }
+
 
     componentDidMount() {
-        getNumberOfPosts(this.state.user).then(res=>{
-            this.setState({numberOfPost: res})
-        })
 
+        this._isMounted = true;
+        if (this._isMounted) {
+            getNumberOfPosts(this.props.route.params.id).then(res => {
+                this.setState({numberOfPost: res})
+
+            })
+            this.getUserinfo()
+
+        }
+    }
+
+    getUserinfo = async () => {
+        try {
+            const id = this.props.route.params.id;
+            const currentUser = await  firebase.database().ref('users')
+                .child(id).once('value', (snapshot)=>{
+                    this.setState({results: snapshot.val()})
+                })
+        }catch (e) {
+            console.log(e)
+        }
+
+
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
 
     }
 
 
-    _onOpenActionSheet = () => {
+    _onOpenActionSheet = (getBlockedData, getKudos) => {
         // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
-        const options = ['Give a Kudos', 'Report', 'Block', 'Cancel'];
 
-        const cancelButtonIndex = 3;
+        const options = [getKudos,  getBlockedData, 'Cancel'];
+
+        const cancelButtonIndex = 2;
 
         this.props.showActionSheetWithOptions(
             {
@@ -39,6 +78,19 @@ class UserProfile extends React.Component {
 
             },
             buttonIndex => {
+
+                if(buttonIndex == 0){
+                    giveKudos(this.props.currentUser.uid, this.props.route.params.id).then(res=>{
+                        this.getUserinfo()
+                    })
+
+
+                }
+
+
+                else if(buttonIndex == 1){
+                    blockUser(this.props.currentUser.uid, this.props.route.params.id)
+                }
                 // Do something here depending on the button index selected
             },
         );
@@ -46,12 +98,22 @@ class UserProfile extends React.Component {
 
 
     Redirect = ()=> {
-        this.props.navigation.navigate('HomeTabNavigator')
+        this.props.navigation.navigate(this.state.screen)
        }
 
+    searchUsers = ()=>{
+        this.props.navigation.navigate('Friends')
+    }
+
    render(){
+       const getBlockedData = ifBlockExist(this.props.currentUserData, this.props.route.params.id)
+       const getKudos = ifKudosExist(this.state.results, this.props.currentUser.uid)
+       const getNumberOfKudos = checkKudosCount(this.state.results)
+
+       //console.log(this.props.userPostData)
+
       return(
-        <View style={{flex:1}}>
+        <View style={{flex:1, backgroundColor:'white'}}>
 
             {this.props.userLoaded ? (
                 <ActivityIndicator color = 'black' size = "large" style = {styles.activityIndicator}/>
@@ -59,31 +121,7 @@ class UserProfile extends React.Component {
 
                 <View style={{flex:1}}>
 
-                {this.state.isPrivate ? (
-                        <View style={{flex:1}}>
-                            <View style={styles.header}>
 
-                                <TouchableOpacity style={{flexDirection:'row', justifyContent: 'space-between', flex:1}} onPress={this.Redirect}>
-                                    <Ionicons color='black'  name="ios-arrow-back" size={24} />
-                                    <Text style={styles.textStyle}>{this.props.userPostData.handle}</Text>
-                                    <Text></Text>
-                                </TouchableOpacity>
-
-                            </View>
-
-
-                            <View style={{flexDirection:'column', justifyContent:'center', alignContent:'center', marginTop:60}}>
-
-                                <AntDesign style={{alignSelf: 'center'}} name="lock" size={32} color="black" />
-
-                                <Text style={{fontSize:24, textAlign:'center', fontFamily: 'OldStandardTT-Regular'}}>This Profile is Private</Text>
-
-
-                            </View>
-
-
-                        </View>
-                    ): (
                         <ScrollView>
 
 
@@ -94,62 +132,54 @@ class UserProfile extends React.Component {
                                     <View style={styles.header}>
 
 
-                                        <Ionicons color='black'  name="ios-arrow-back" size={24} />
+                                        <Ionicons color='black'  name="ios-arrow-back" size={30} />
 
 
-                                        <Text style={styles.textStyle}>{this.props.userPostData.handle}</Text>
-                                        <Text></Text>
+                                        <Text style={styles.textStyle}>{this.state.results.handle}</Text>
+                                        <TouchableWithoutFeedback onPress={()=>this.props.navigation.navigate('Friends')}>
+                                            <MaterialIcons color='black' style={{paddingRight:10}} name='search' size={30} />
+                                        </TouchableWithoutFeedback>
 
                                     </View>
                                 </TouchableOpacity>
 
                                 <View style={styles.wallerPaper}>
-                                    <Image source={{uri: this.props.userPostData.image }} resizeMode='cover' style={{width:'100%', height:200}}/>
+                                    <Image source={{uri: this.state.results.image }} resizeMode='cover' style={{width:'100%', height:200}}/>
                                 </View>
                                 <View style={styles.imageContainer}>
-                                    <Image source={{uri: this.props.userPostData.image }} style={styles.circleImage}/>
+                                    <Image source={{uri: this.state.results.image }} style={styles.circleImage}/>
                                 </View>
 
+                                {this.state.results.profilePrivacy ? (
+                                    <View style={{flexDirection:'column', justifyContent:'center', alignContent:'center', marginTop:30}}>
 
+                                        <AntDesign style={{alignSelf: 'center'}} name="lock" size={24} color="black" />
 
+                                        <Text style={{fontSize:20, textAlign:'center', fontFamily: 'OldStandardTT-Regular'}}>This Profile is Private</Text>
+
+                                    </View>
+
+                                ): (
+                                <View>
                                 <View style={{flex:1, flexDirection: 'row', justifyContent:'center', alignContent:'center'}}>
                                     <TouchableOpacity style={styles.follow}>
 
                                         <Text style={styles.followText}> Give a Kudos</Text>
                                         <FontAwesome style={styles.icon}  name="thumbs-o-up" size={24} color="white" />
-                                        <Text style={styles.followText}> 12</Text>
+                                        <Text style={styles.followText}> {getNumberOfKudos}</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity  style={styles.followSettings}>
-                                        <Octicons name="comment" size={24} color="black" />
-                                    </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={()=>this._onOpenActionSheet()} style={styles.followSettings}>
+                                    <TouchableOpacity onPress={()=>this._onOpenActionSheet(getBlockedData, getKudos)} style={styles.followSettings}>
                                         <Ionicons  name="ios-more" size={24} color="black" />
                                     </TouchableOpacity>
 
 
                                 </View>
 
-
-                                {/* <View style={styles.container}>
-                    <View style={styles.statContainer}>
-                        <Text style={styles.number}>12k</Text>
-                        <Text style={styles.stat}>Grammers</Text>
-                    </View>
-                    <View style={[styles.statContainer, styles.divider]}>
-                        <Text style={styles.number}>{this.state.numberOfPost}</Text>
-                        <Text style={styles.stat}>Posts</Text>
-                    </View>
-                    <View style={styles.statContainer}>
-                        <Text style={styles.number}>12k</Text>
-                        <Text style={styles.stat}>Kudos</Text>
-                    </View>
-
-                </View> */}
                                 <View style={{flex:1, justifyContent:'center', alignContent:'center', marginTop: 8}}>
 
-                                    <Text style={styles.postText}>Posts</Text>
+                                    <Text style={styles.postText}>{this.state.numberOfPost} Posts</Text>
 
 
                                     <View>
@@ -165,10 +195,12 @@ class UserProfile extends React.Component {
 
 
                                 </View>
+                                    </View>
+                                    )}
 
                             </View>
                         </ScrollView>
-                    )}
+
 
                 </View>
 
@@ -179,16 +211,17 @@ class UserProfile extends React.Component {
 }
 
 
-
-
 }
 
 
 
-const mapStateToProps = ({userPostData: {userPostData, post, userLoaded}}) => ({
-    userPostData,
+
+const mapStateToProps = ({auth:{currentUser, currentUserData},userPostData: {post, userLoaded}}) => ({
+
     post,
-    userLoaded
+    userLoaded,
+    currentUser,
+    currentUserData
 
 })
 
@@ -290,7 +323,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:'#0078ff',
-        width:250,
+        width:300,
         height:40,
         borderRadius: 10,
         flexDirection: 'row',
@@ -351,5 +384,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: 80,
-    }
+    },
+
 })

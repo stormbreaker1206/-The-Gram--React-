@@ -1,37 +1,149 @@
 import React from 'react';
-import CustomButton from "../../components/customButtons/customButtons";
 import * as firebase from 'firebase/app';
-import {StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    ActivityIndicator,
+    TouchableOpacity,
+    TouchableWithoutFeedback, Alert
+} from 'react-native';
+import {
+    privacySettings,
+    DirectMessage,
+    AllowNotification,
+    AutoDelete,
+    deleteAllPost, deleteUser
+} from "../../helpers/firebaseHelpers";
+import {checkBlockCount} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
-import {Body, Button, Container, Content, Header, Icon, Left, ListItem, Right, Switch} from "native-base";
+import {Body, Button, Container, Content,  Icon, Left, ListItem, Right, Switch} from "native-base";
 import {EvilIcons, FontAwesome, AntDesign, MaterialIcons, MaterialCommunityIcons} from "@expo/vector-icons";
 class Settings extends React.Component{
+    _isMounted = false;
+    state={
+        directMessage: null ,
+        notification: null,
+        profilePrivacy: null,
+        autoDelete: null,
+
+
+    }
+
+    componentDidMount() {
+
+
+        this._isMounted = true;
+
+        if (this._isMounted) {
+            this.setState({
+                directMessage: this.props.currentUserData.directMessage,
+                notification: this.props.currentUserData.notification,
+                profilePrivacy: this.props.currentUserData.profilePrivacy,
+                autoDelete: this.props.currentUserData.autoDelete,
+
+
+            })
+
+        }
+    }
+
+    createTwoButtonAlert = () =>
+        Alert.alert(
+            "Message",
+            "Are you sure?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                { text: "Delete", onPress: this.deactivateAccount
+
+                }
+            ],
+            { cancelable: false }
+        );
+componentWillUnmount() {
+
+    this._isMounted = false;
+}
+
+    deactivateAccount = async ()=>{
+
+      let user = firebase.auth().currentUser;
+        await deleteAllPost(this.props.currentUser.uid)
+        await deleteUser(this.props.currentUser.uid)
+
+        user.delete().then(function() {
+            this.props.signOutUser()
+        }).catch(function(error) {
+            // An error happened.
+        });
+
+    }
+
+    changePrivacy = async (id, options)=>{
+       await this.setState({profilePrivacy: !this.state.profilePrivacy})
+       await privacySettings(id, options)
+
+    }
+
+    changeMessageSettings = async (id, message)=>{
+        await this.setState({directMessage: !this.state.directMessage})
+        await DirectMessage(id, message)
+
+    }
+    changeNotificationSettings = async (id, status)=>{
+        await this.setState({notification: !this.state.notification})
+        await AllowNotification(id, status)
+
+    }
+
+    turnOnAutoDelete = async (id, options) =>{
+        await this.setState({autoDelete: !this.state.autoDelete})
+        await AutoDelete(id, options)
+    }
+
 
     signOut = async () => {
         try {
             await firebase.auth().signOut();
-            this.props.signOut()
+            await this.props.signOutUser()
 
         } catch (error) {
             alert('Unable to sign out right now');
         }
     };
     render() {
+        const bUsers = checkBlockCount(this.props.currentUserData)
         return(
             <Container>
 
                 <Content>
-                    <ListItem style={style.listStyle} icon>
+                    {/*}  <ListItem style={style.listStyle} icon>
                         <Left>
                             <Button style={{ backgroundColor: "white" }}>
                                 <AntDesign name="contacts" size={24} color="black" />
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Change Username</Text>
+                            <Text style={style.textStyle}>Change Username</Text>
+                        </Body>
+
+
+                    </ListItem> */}
+                    <ListItem style={style.listStyle} icon>
+                        <Left>
+                            <Button style={{ backgroundColor: "white" }}>
+                                <MaterialIcons name="autorenew" size={24} color="black" />
+                            </Button>
+                        </Left>
+                        <Body>
+                            <Text style={style.textStyle}>Auto Delete Chat</Text>
                         </Body>
                         <Right>
-                            <Switch value={false} />
+                            <Switch onValueChange={()=>this.turnOnAutoDelete(this.props.currentUser.uid, this.state.autoDelete)}  value={this.state.autoDelete} />
                         </Right>
                     </ListItem>
                     <ListItem style={style.listStyle} icon>
@@ -41,10 +153,10 @@ class Settings extends React.Component{
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Allow Direct Chat</Text>
+                            <Text style={style.textStyle}>Allow Direct Chat</Text>
                         </Body>
                         <Right>
-                            <Switch value={true} />
+                            <Switch onValueChange={()=>this.changeMessageSettings(this.props.currentUser.uid, this.state.directMessage)} value={this.state.directMessage} />
                         </Right>
                     </ListItem>
                     <ListItem style={style.listStyle} icon>
@@ -54,10 +166,10 @@ class Settings extends React.Component{
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Profile Privacy</Text>
+                            <Text style={style.textStyle}>Profile Privacy</Text>
                         </Body>
                         <Right>
-                            <Switch value={false} />
+                            <Switch onValueChange={()=>this.changePrivacy(this.props.currentUser.uid, this.state.profilePrivacy)} value={this.state.profilePrivacy} />
                         </Right>
 
                     </ListItem>
@@ -68,10 +180,10 @@ class Settings extends React.Component{
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Allow Notifications</Text>
+                            <Text style={style.textStyle}>Allow Notifications</Text>
                         </Body>
                         <Right>
-                            <Switch value={true} />
+                            <Switch onValueChange={()=>this.changeNotificationSettings(this.props.currentUser.uid, this.state.notification)} value={this.state.notification} />
                         </Right>
                     </ListItem>
                     <ListItem style={style.listStyle} icon>
@@ -81,7 +193,24 @@ class Settings extends React.Component{
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Blocked Users</Text>
+                            <Text style={style.textStyle}>Blocked Users</Text>
+                        </Body>
+                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('BlockedUsers')}>
+                        <Right>
+                            <Text style={style.textStyle}>{bUsers} Users</Text>
+                            <Icon active name="arrow-forward" />
+                        </Right>
+                        </TouchableOpacity>
+                    </ListItem>
+
+                    <ListItem style={style.listStyle} icon>
+                        <Left>
+                            <Button style={{ backgroundColor: "white" }}>
+                                <MaterialIcons name="library-books" size={24} color="black" />
+                            </Button>
+                        </Left>
+                        <Body>
+                            <Text style={style.textStyle}>Data Policy</Text>
                         </Body>
                         <Right>
 
@@ -95,40 +224,33 @@ class Settings extends React.Component{
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Data Policy</Text>
+
+                            <Text style={style.textStyle}>Terms of Use</Text>
+
                         </Body>
                         <Right>
-
+                        <TouchableWithoutFeedback onPress={()=>this.props.navigation.navigate('TermOfUse')}>
                             <Icon active name="arrow-forward" />
+                        </TouchableWithoutFeedback>
                         </Right>
                     </ListItem>
-                    <ListItem style={style.listStyle} icon>
-                        <Left>
-                            <Button style={{ backgroundColor: "white" }}>
-                                <MaterialIcons name="library-books" size={24} color="black" />
-                            </Button>
-                        </Left>
-                        <Body>
-                            <Text>Terms of Use</Text>
-                        </Body>
-                        <Right>
-
-                            <Icon active name="arrow-forward" />
-                        </Right>
-                    </ListItem>
-                    <ListItem style={style.listStyle} icon>
+                    {/*} <ListItem style={style.listStyle} icon>
                         <Left>
                             <Button style={{ backgroundColor: "white" }}>
                                 <EvilIcons name="close-o" size={32} color="black" />
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Deactivate</Text>
+
+                            <Text style={style.textStyle}>Deactivate</Text>
+
                         </Body>
                         <Right>
-                            <Switch value={false} />
+                            <Switch onValueChange={this.createTwoButtonAlert}  value={false} />
                         </Right>
                     </ListItem>
+                    */}
+
                     <ListItem style={style.listStyle} icon>
                         <Left>
                             <Button style={{ backgroundColor: "white" }}>
@@ -136,7 +258,11 @@ class Settings extends React.Component{
                             </Button>
                         </Left>
                         <Body>
-                            <Text>Sign Out</Text>
+                            <TouchableWithoutFeedback onPress={this.signOut}>
+
+
+                            <Text style={style.textStyle}>Sign Out</Text>
+                            </TouchableWithoutFeedback>
                         </Body>
 
                     </ListItem>
@@ -145,15 +271,25 @@ class Settings extends React.Component{
         )
     }
 }
+
+const mapStateToProps = ({auth: {currentUser, currentUserData}}) => ({
+    currentUser,
+    currentUserData,
+
+
+
+})
 const mapDispatchToprops = dispatch =>{
     return{
 
-        signOut: () => dispatch({type: 'SIGN_OUT'})
+        signOutUser: () => dispatch({type: 'SIGN_OUT'}),
+
+
     }
 
 }
 
-export default connect(null, mapDispatchToprops)(Settings)
+export default connect(mapStateToProps, mapDispatchToprops)(Settings)
 
 const style = StyleSheet.create({
     container:{
@@ -164,5 +300,8 @@ const style = StyleSheet.create({
     listStyle:{
         marginTop:15,
         marginBottom:10
+    },
+    textStyle:{
+        fontFamily: 'OldStandardTT-Regular'
     }
 })

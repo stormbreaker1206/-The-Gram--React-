@@ -7,9 +7,10 @@ import {connect} from 'react-redux';
 import {checkLikes, checkAuthenticCount, checkRumourCount, checkCommentsCount, checkLikesCount, ifRumourExist, ifAuthenticExist} from "../../helpers/userUtilis";
 import { compose } from 'redux';
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-import {getName, getUserPost, updateLike, isRumour, isAuthentic} from '../../helpers/firebaseHelpers';
-import LightBoxView from "../LightBox/LightBoxComponent";
-import Lightbox from "react-native-lightbox";
+import {getUserPost, updateLike, isRumour, isAuthentic} from '../../helpers/firebaseHelpers';
+import VideoPlayer from '../VideoComponent/Video';
+import ImageView from '../ImageComponent/Image.jsx';
+
 let authCountNumber = 0
 
 class PostComponent extends React.Component{
@@ -27,15 +28,18 @@ class PostComponent extends React.Component{
                 uid: null,
                 playVideo: true,
                 postId: null,
+                imageLoaded:null,
+               
 
         }
 
     }
 
-    
+          
      settings = (item, id, isRumourExist, isAuthenticExist)=>{
-        const options = [isRumourExist, isAuthenticExist, 'Report Post', 'Cancel'];
-        const cancelButtonIndex = 3;
+        const options = [isRumourExist, isAuthenticExist,  'Cancel'];
+        const cancelButtonIndex = 2;
+
 
         this.props.showActionSheetWithOptions(
             {
@@ -58,8 +62,6 @@ class PostComponent extends React.Component{
 
                     })
 
-                }else if(buttonIndex == 2){
-                    alert('reported')
                 }
             },
         );
@@ -97,16 +99,13 @@ class PostComponent extends React.Component{
 
             this.props.navigation.navigate('MyProfile')
         }else {
-            await getName(id).then(response =>{
 
-                this.props.userPostData(response.val())
-            });
             await getUserPost(id).then(res=>{
 
                 this.props.userPost(res)
             })
 
-             this.props.navigation.navigate('UserProfile', {id : id})
+             this.props.navigation.navigate('UserProfile', {id : id, screen: 'HomeTabNavigator'})
         }
     }
 
@@ -114,7 +113,7 @@ class PostComponent extends React.Component{
 
       // const authCount = checkAuthenticCount(item)
       //  let test = authCount
-     // console.log()
+      //console.log(item)
 
 
         const isRumourExist = ifRumourExist(item, this.state.uid)
@@ -131,10 +130,9 @@ class PostComponent extends React.Component{
         }
        
 
-
           return (
 
-
+            
                   <View style={styles.feedItem}>
 
 
@@ -167,27 +165,11 @@ class PostComponent extends React.Component{
                                       <Text style={styles.post}>{item.status}</Text>
                                       {item.type === "video" ? (
 
-
-                                          <Video
-
-                                              source={item.image ? {uri: item.image } : null}
-                                              posterSource={{uri: 'https://giphy.com/gifs/mashable-3oEjI6SIIHBdRxXI40'}}
-                                              rate={1.0}
-                                              volume={1.0}
-                                              isMuted={false}
-                                              shouldPlay={false}
-                                              isLooping={false}
-                                              useNativeControls
-                                              resizeMode="cover"
-                                              style={{ height: 300,
-                                                  marginVertical: 16, alignItems:'center' }}
-                                          />
+                                        <VideoPlayer item={item.image}/>
 
                                       ): (
-                                          <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={item} user={this.state.uid} userLikedPost={userLikedPost} postId={item.key} />}>
-                                              <Image  source={{uri: item.image}} style={styles.postImage} resizeMode="cover" />
+                                        <ImageView item={item.image} key={item.key} userLikedPost={userLikedPost}/>
 
-                                          </Lightbox>
                                       )}
                                   </View>
 
@@ -224,6 +206,7 @@ class PostComponent extends React.Component{
     };
 
     render() {
+    
         return (
             <View style={styles.container}>
 
@@ -242,7 +225,7 @@ class PostComponent extends React.Component{
 
 const mapDispatchToprops = dispatch =>{
     return{
-        userPostData: data => dispatch({type:'GET_USER_POST_ID', payload:data}),
+
         userPost: data => dispatch({type:'GET_POST', payload:data}),
 
 
@@ -299,13 +282,8 @@ const styles = StyleSheet.create({
     },
     text:{
         fontFamily: 'OldStandardTT-Regular'
-    },
-    postImage: {
-        width: '100%',
-        height: 300,
-      //  borderRadius: 5,
-        marginVertical: 16
     }
+   
 
 
 });

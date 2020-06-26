@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Dimensions,  Image,  TouchableWithoutFeedback} from 'react-native';
+import {StyleSheet, View, Dimensions,  Image,  TouchableOpacity} from 'react-native';
 import {Spinner} from 'native-base'
 import {Ionicons} from "@expo/vector-icons";
 import {connect} from 'react-redux';
@@ -19,7 +19,7 @@ class ProfileHeader extends React.Component{
 
     updatePostProPic = async (downloadUrl)=>{
         await firebase.database().ref('posts').orderByChild('id').equalTo(this.props.auth.currentUser.uid)
-            .on('value' , (snapshot)=>{
+            .once('value' , (snapshot)=>{
                 //console.log(snapshot.val())
                 if(snapshot.exists()){
                     snapshot.forEach(function (snapshot1) {
@@ -84,7 +84,8 @@ class ProfileHeader extends React.Component{
             
             <View style={{padding:5}}>
                 
-            <Header onPress={this.props.onPress} text={JSON.parse(JSON.stringify(this.props.auth.currentUserData.handle))} name='account-circle'/>
+                
+            <Header onPress={this.props.onPress} navigation={this.props.navigation} text={JSON.parse(JSON.stringify(this.props.auth.currentUserData.handle))} name='search'/>
                 <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
          
        
@@ -92,7 +93,7 @@ class ProfileHeader extends React.Component{
                 <View style={styles.wallerPaper}>
                     <Image source={{uri: this.props.auth.currentUserData.image}} resizeMode='cover' style={{width:'100%', height:200}}/>
                 </View>
-                <TouchableWithoutFeedback onPress={this.openImageLibrary}>
+                <TouchableOpacity onPress={this.openImageLibrary}>
                 <View style={styles.imageContainer}>
                     <View style={styles.check}>
 
@@ -117,7 +118,7 @@ class ProfileHeader extends React.Component{
                     
                    
                 </View>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
                 <View>
 
                 </View>

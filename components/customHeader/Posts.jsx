@@ -12,12 +12,13 @@ import UserPost from '../PostComponent/UserPost';
         postArray: [],
         currentUserPostId : this.props.currentUserPostId,
         profileId: null,
-        currentUserId: this.props.auth.currentUser.uid
+        currentUserId: this.props.auth.currentUser.uid,
+
     }
     
     componentDidMount(){
         this.getData();
-    
+
     }
 
     getData = async () =>{
@@ -52,7 +53,7 @@ import UserPost from '../PostComponent/UserPost';
                         {this.state.postArray.map((posts) =>{
                             return  (
 
-                            <UserPost navigation={this.props.navigation} item={posts} key={posts.key}/>
+                            <UserPost navigation={this.props.navigation}  item={posts} key={posts.key}/>
                                 
                             );
                             

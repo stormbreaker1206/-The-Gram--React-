@@ -13,9 +13,15 @@ class HotTopics extends React.Component{
       hotTopicsPostData: []
     }
 
-    async componentDidMount() {
+     componentDidMount() {
+         this._isMounted = true;
+         if (this._isMounted) {
+             this.getLikePosts()
 
-            await this.getLikePosts()
+         }
+    }
+    componentWillUnmount() {
+        this._isMounted = false;
 
 
     }

@@ -17,10 +17,9 @@ import SplashScreen from "./screens/SplashScreen";
 import MyProfile from "./screens/mainScreen/MyProfile";
 import * as Font from "expo-font";
 import Friends from "./screens/mainScreen/Friends";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import CustomDrawerComponent from "./components/customDrawerComponent/CustomDrawerComponent";
 import HotTopics from "./screens/mainScreen/HotTopics";
-import Messages from "./screens/mainScreen/Messages";
 import Post from "./screens/mainScreen/Post";
 import Modal from "./screens/mainScreen/Modal";
 import { YellowBox } from 'react-native';
@@ -28,7 +27,10 @@ import _ from 'lodash';
 import UserProfile from "./screens/mainScreen/UserProfile";
 import Comment from "./screens/mainScreen/Comment";
 import Chat from "./screens/mainScreen/Chat";
-import UserChatSettings from "./screens/chatSettings/userChatSettings";
+import BlockedUsers from "./screens/blockedUsers/BlockedUsers";
+import TermOfUse from "./screens/UserAgreement/TermOfUse";
+
+
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -248,7 +250,7 @@ const HomeStackNavigator = ({navigation}) => (
 
         ),
         headerRight:() =>(
-            <Ionicons onPress={() => navigation.navigate('Friends')} name="ios-chatboxes" size={30}  style={{marginRight:10}} color='black' />
+            <MaterialIcons onPress={() => navigation.navigate('Friends')} name="search" size={30}  style={{marginRight:10}} color='black' />
         )
     }}>
         <Stack.Screen
@@ -269,6 +271,9 @@ const HomeStackNavigator = ({navigation}) => (
             <Stack.Screen name="modal" options={{ title: '' }} component={Modal}/>
             <Stack.Screen name="Comment" options={{ title: '', headerShown: false }} component={Comment}/>
             <Stack.Screen name='UserProfile' options={{title: '', headerShown: false}} component={UserProfile}/>
+            <Stack.Screen name='BlockedUsers' options={{title: '', headerShown: false}} component={BlockedUsers}/>
+            <Stack.Screen name='TermOfUse' options={{title: '', headerShown: false}} component={TermOfUse}/>
+            
 
 
             
@@ -284,7 +289,7 @@ const ChatNavigator =()=>(
             name="Friends" component={Friends}/>
 
         <Stack.Screen name='Chat' options={{title: '', headerShown: false}} component={Chat}/>
-        <Stack.Screen name='UserChatSettings' options={{title: '', headerShown: false}} component={UserChatSettings}/>
+
 
 
     </Stack.Navigator>

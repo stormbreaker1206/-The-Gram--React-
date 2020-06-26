@@ -10,21 +10,38 @@ import * as firebase from "firebase";
 import {HeaderHeightContext} from "@react-navigation/stack";
 
 class Comment extends React.Component{
-
+    _isMounted = false;
     state={
         comments: '',
         showSpinner: false,
         texRef: null,
-        postId: this.props.route.params.id,
-        uid: this.props.currentUser.uid,
-        image: this.props.currentUserData.image,
-        handle: this.props.currentUserData.handle,
+        postId: null,
+        uid: null,
+        image: null,
+        handle: null,
         data: []
     }
 
 
     componentDidMount() {
-        this.getComment()
+
+        this._isMounted = true;
+
+        if (this._isMounted) {
+            this.getComment()
+
+            this.setState({
+                postId: this.props.route.params.id,
+                uid: this.props.currentUser.uid,
+                image: this.props.currentUserData.image,
+                handle: this.props.currentUserData.handle
+            })
+
+        }
+   }
+
+   componentWillUnmount() {
+       this._isMounted = false;
    }
 
     getComment = async () => {
@@ -33,7 +50,7 @@ class Comment extends React.Component{
             const comments = await firebase.
             database()
                 .ref('comment').orderByChild('postId');
-            comments.on('value',  (snapshot) => {
+            comments.once('value',  (snapshot) => {
                 const postArray = snapshotToArray(snapshot)
                let list = postArray.filter(x => x.postId === this.state.postId)
                 this.setState({data: list.reverse()})
@@ -64,7 +81,7 @@ class Comment extends React.Component{
         this.setState({showSpinner:true})
         await updateComment(postId, uid)
         await commentOnPost(postId, comments, uid, image, handle).then(res =>{
-          this.setState({showSpinner: false})
+          this.setState({showSpinner: false},()=> this.getComment())
 
        })
 
@@ -85,7 +102,7 @@ render(){
                             <TouchableOpacity
                                 onPress={this.redirect}
                             >
-                                <Ionicons color='black' style={{paddingLeft:10}} name="ios-arrow-back" size={24} />
+                                <Ionicons color='black' style={{paddingLeft:10}} name="ios-arrow-back" size={30} />
                             </TouchableOpacity>
                         </Left>
                         <Body>
@@ -184,9 +201,7 @@ const styles = StyleSheet.create({
         marginRight:16,
 
     },
-    inputStyle:{
-        color: 'pink'
-    },
+
     text:{
         fontSize:14,
         fontFamily: 'OldStandardTT-Regular'
