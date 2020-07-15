@@ -4,9 +4,10 @@ import {Container, Left, Right, Body, Header, Content, Footer, Item, Input, Spin
 import {connect} from 'react-redux';
 import {Ionicons} from "@expo/vector-icons";
 import CommentFlatList from "../../components/Comment/CommentFlatList";
-import {commentOnPost, snapshotToArray, updateComment} from "../../helpers/firebaseHelpers";
+import {commentOnPost, snapshotToArray, updateComment, userNotification} from "../../helpers/firebaseHelpers";
 import {Overlay} from "react-native-elements";
 import * as firebase from "firebase";
+
 import {HeaderHeightContext} from "@react-navigation/stack";
 
 class Comment extends React.Component{
@@ -34,7 +35,8 @@ class Comment extends React.Component{
                 postId: this.props.route.params.id,
                 uid: this.props.currentUser.uid,
                 image: this.props.currentUserData.image,
-                handle: this.props.currentUserData.handle
+                handle: this.props.currentUserData.handle,
+                userPostID: this.props.route.params.userPostID
             })
 
         }
@@ -42,6 +44,7 @@ class Comment extends React.Component{
 
    componentWillUnmount() {
        this._isMounted = false;
+        
    }
 
     getComment = async () => {
@@ -84,6 +87,10 @@ class Comment extends React.Component{
           this.setState({showSpinner: false},()=> this.getComment())
 
        })
+
+       if(this.state.userPostID != this.state.uid){
+           userNotification(handle, "commented on your post...", this.state.userPostID, image, postId )
+       }
 
     }
 render(){
@@ -128,7 +135,7 @@ render(){
                         {this.state.data.map((posts) =>{
                             return  (
 
-                                <CommentFlatList item={posts} key={posts.key}/>
+                                <CommentFlatList getComment={this.getComment} item={posts} key={posts.key}/>
 
                             );
 

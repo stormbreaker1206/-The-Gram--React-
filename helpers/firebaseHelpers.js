@@ -1,5 +1,41 @@
+import {Platform} from 'react-native';
 import * as firebase from "firebase";
-import {getCurrentTime} from "./userUtilis";
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+
+
+export const registerForPushNotification = async () =>{
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+  
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  
+    return token;
+
+}
 
 export const snapshotToArray = snapshot => {
   let returnArr = [];
@@ -458,4 +494,100 @@ export const deleteUser = async (id) =>{
                 firebase.database().ref('users').child(id).remove()
             }
         })
+}
+
+export const userNotification = async (userHandle, notification, id, userImage, postId)=>{
+
+    try{
+
+        const notifyUser = await firebase
+        .database()
+        .ref('notification')
+        .push({ id: id, comments: notification, fromWhom: userHandle, timePosted: Date.now(), userImage: userImage, read: false,
+        postId:postId});
+    // await  this.setState({isLoading: false})
+
+    }catch(e){
+        console.log(e)
+    }
+
+}
+
+export const deleteNotification = async (id)=>{
+    try{
+
+        const  ref =  await firebase.database().ref('notification').child(id).once('value',
+        function (snapshot) {
+            if(snapshot.exists()){
+
+                firebase.database().ref('notification').child(id).remove()
+            }
+        })
+
+    }catch(e){
+        console.log(e)
+    }
+}
+
+export const deleteComment = async (id)=>{
+   
+
+    try{
+
+        const  ref =  await firebase.database().ref('comment').child(id).once('value',
+        function (snapshot) {
+            if(snapshot.exists()){
+                
+                firebase.database().ref('comment').child(id).remove()
+            }
+        })
+
+    }catch(e){
+        console.log(e)
+    }
+
+}
+
+export const viewNotification = async(key)=>{
+
+    try{
+        const  ref =  await firebase.database().ref('notification').child(key)
+        .update({read: true});
+        }catch (e){
+    console.log(e)
+
+}
+    
+
+
+}
+
+export const deletePostCount = async (postId, id) =>{
+    
+    try{
+        let key = ''
+        let commentKey =''
+        const  ref =  await firebase.database().ref('posts').child(postId).child('comments').once('value',
+        function (snapshot) {
+            if(snapshot.exists()){
+
+                snapshot.forEach(function(snapshot1) {
+              
+                   firebase.database().ref('posts').child(postId).child('comments').
+                    child(snapshot1.key).orderByChild(id).once('value', (snapshot2)=>{
+                    commentKey = snapshot1.key
+                    key = snapshot2.key
+
+                    })
+
+               
+                })
+                
+                firebase.database().ref('posts').child(postId).child('comments').child(commentKey).remove()
+            }
+        })
+
+    }catch(e){
+        console.log(e)
+    }
 }

@@ -24,7 +24,9 @@ class UserFeed extends React.Component{
             Promise.all([
                 this.getUserData(),
                 this.getPost(),
-                this.getUserSettings()
+                this.getUserSettings(),
+                this.getUserNotifications(),
+               
 
             ]);
         }
@@ -62,7 +64,28 @@ componentWillUnmount() {
 
     }
 
+    
+    getUserNotifications = async () => {
+        try {
+            const id = this.props.currentUser.uid;
+            const currentUser = await  firebase.database().ref('notification')
+                .orderByChild('id').on('value', (snapshot)=>{
+                  const postArray = snapshotToArray(snapshot)
+                  let list = postArray.filter(x => x.id === this.props.currentUser.uid)
+                  let results = list.filter(x => x.read === false )
+                  this.props.notificationCount(results.length)
+                  this.props.getUserNotification(list.reverse())
+           
 
+                })
+        }catch (e) {
+            console.log(e)
+        }
+
+
+    }
+
+   
 
 
     getPost = async () => {
@@ -90,7 +113,7 @@ componentWillUnmount() {
 
    
     render() {
-        console.log('app')
+        
         return (
             <View style={styles.container}>
 
@@ -119,8 +142,10 @@ const mapDispatchToprops = dispatch =>{
         GetCurrentData: data => dispatch({type:'GET_USER_DATA', payload:data}),
         GetPostData: data => dispatch({type: 'GET_POST_DATA', payload:data}),
         GetUserSettings: data => dispatch({type: 'GET_SETTINGS', payload:data}),
+        getUserNotification : data => dispatch({type: 'GET_USER_NOTIFICATION', payload:data}),
+        notificationCount : data => dispatch({type: 'GET_NOTIFICATION_COUNT', payload:data})
 
-
+        
     }
 
 }

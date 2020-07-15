@@ -10,8 +10,10 @@ class ImageView extends React.Component{
         imageLoaded: null
     }
     render(){
+       
         return(
-            <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false}  renderContent={()=><LightBoxView item={this.props.item} user={this.props.currentUser.uid} userLikedPost={this.props.userLikedPost} postId={this.props.key} />}>
+            <Lightbox springConfig={{tension: 15, friction: 7}} swipeToDismiss={false} 
+             renderContent={()=><LightBoxView item={this.props.postItem} user={this.props.currentUser.uid} userLikedPost={this.props.userLikedPost} postId={this.props.itemKey} />}>
 
             <View>
             <Image  source={{uri: this.props.item}} style={styles.postImage} resizeMode="cover"

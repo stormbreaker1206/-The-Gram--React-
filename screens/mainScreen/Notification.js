@@ -1,23 +1,45 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
-class Notification extends React.Component{
-    render() {
+import { StyleSheet, Text, View, Image, ActivityIndicator, ScrollView } from 'react-native';
+import {connect} from 'react-redux';
+import NotificationList from '../../components/Notification/NotificationList.jsx'
+
+ Notification = ({currentUserNotification, navigation})=>{
+ 
+  
+       
         return(
-            <View style={style.container}>
-                <Text>
-                   Notification
-                </Text>
-            </View>
+            <ScrollView style={style.container} >
+
+
+                    {currentUserNotification.map((posts) =>{
+                            return  (
+                               
+                               
+                                <NotificationList navigation={navigation} item={posts} key={posts.key}/>
+                                
+                                
+                            );
+
+                        })}
+
+               
+            </ScrollView>
         )
-    }
+    
 }
 
-export default Notification
+const mapStateToProps = ({auth: {currentUserNotification}}) => ({
+    currentUserNotification
+    
+  
+})
+
+export default connect(mapStateToProps) (Notification)
 
 const style = StyleSheet.create({
     container:{
         flex:1,
-        alignItems: 'center',
-        justifyContent: 'center'
+        backgroundColor: 'white'
+        
     }
 })

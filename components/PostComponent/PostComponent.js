@@ -168,21 +168,22 @@ class PostComponent extends React.Component{
                                         <VideoPlayer item={item.image}/>
 
                                       ): (
-                                        <ImageView item={item.image} key={item.key} userLikedPost={userLikedPost}/>
+                                        <ImageView item={item.image} postItem={item} itemKey={item.key} userLikedPost={userLikedPost}/>
 
                                       )}
                                   </View>
 
                               )}
 
-                              <View style={{flex:1}}>
+                              <View style={{flex:1}}>       
                                   <View style={{ flexDirection: "row", paddingLeft: 8 }}>
                                       <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkLikesCount(item)}</Text>
                                       <TouchableOpacity onPress={()=> updateLike(item, this.state.uid)}>
                                           <Ionicons name={userLikedPost} size={24} color={iconColor} style={{paddingLeft:5, marginRight: 16 }} />
                                       </TouchableOpacity>
                                       <Text style={[styles.text, {color:'black', alignItems:'center'}]}>{checkCommentsCount(item)}</Text>
-                                      <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment', {id : item.key})}>
+                                      <TouchableOpacity onPress={()=>this.props.navigation.navigate('Comment', {id : item.key,
+                                        userPostID: item.id})}>
                                           <Octicons style={{ paddingLeft: 5 }} name="comment" size={24} color="black" />
                                       </TouchableOpacity>
 

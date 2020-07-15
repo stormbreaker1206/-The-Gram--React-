@@ -1,0 +1,1 @@
+export const MESSAGE = "Welcome to the Gram ";

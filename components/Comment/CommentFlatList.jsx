@@ -1,11 +1,67 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import moment from "moment";
-import {Ionicons, Octicons} from "@expo/vector-icons";
-import {Video} from "expo-av";
+import {connect} from 'react-redux';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
+import { Ionicons } from '@expo/vector-icons';
+import { compose } from 'redux';
+import {deleteComment, deletePostCount, blockUser} from '../../helpers/firebaseHelpers';
+import {ifBlockExist} from '../../helpers/userUtilis';
+const CommentFlatList = ({item, currentUser, showActionSheetWithOptions, getComment, currentUserData}) => {
+
+  const getBlockedData = ifBlockExist(currentUserData, item.userId)
+  
+
+  const settings = (item)=>{
+    const options = ['Delete',  'Cancel'];
+    const cancelButtonIndex = 1;
 
 
-const CommentFlatList = ({item}) => {
+    showActionSheetWithOptions(
+        {
+            options,
+            cancelButtonIndex,
+
+        },
+        buttonIndex => {
+        
+
+            if(buttonIndex == 0){
+              deleteComment(item.key).then((res)=>{
+                getComment()
+              })
+              deletePostCount(item.postId, currentUser.uid)
+            
+            }
+        },
+    );
+}
+
+const reportSettings = (item, getBlockedData)=>{
+  const options = [getBlockedData,  'Cancel'];
+  const cancelButtonIndex = 1;
+
+
+  showActionSheetWithOptions(
+      {
+          options,
+          cancelButtonIndex,
+
+      },
+      buttonIndex => {
+      
+
+          if(buttonIndex == 0){
+           blockUser(currentUser.uid, item.userId)
+          }
+      },
+  );
+}
+
+
+
+
+
     return (
 
 
@@ -24,8 +80,16 @@ const CommentFlatList = ({item}) => {
 
                             <Text style={styles.timestamp}>{moment(item.timePosted).fromNow()}</Text>
                         </View>
-
-
+                        {currentUser.uid == item.userId ? (
+                          <TouchableOpacity onPress={()=>settings(item)}>
+                          <Ionicons name="ios-more" size={24} color="#73788B" />
+                          </TouchableOpacity>
+                        ):(
+                          <TouchableOpacity onPress={()=>reportSettings(item, getBlockedData)}>
+                          <Ionicons name="ios-more" size={24} color="#73788B" />
+                          </TouchableOpacity>
+                        )}
+                        
                     </View>
 
                     <Text style={styles.post}>{item.comments}</Text>
@@ -35,10 +99,25 @@ const CommentFlatList = ({item}) => {
                 </View>
             </View>
         </View>
+      
     )
 
 }
-export default CommentFlatList;
+const mapStateToProps = ({auth: {currentUser, currentUserData}}) => ({
+  currentUser,
+  currentUserData
+ 
+})
+
+const wrapper = compose(
+  connect(
+    mapStateToProps
+ 
+  ),
+  connectActionSheet
+);
+
+export default wrapper (CommentFlatList);
 
 const styles = StyleSheet.create({
 
@@ -86,6 +165,14 @@ const styles = StyleSheet.create({
         height: 300,
         borderRadius: 5,
         marginVertical: 16
-    }
+    },
+    
+deleteButton:{
+  flex:1,
+  backgroundColor:'red',
+  justifyContent:'center',
+  alignItems:'center',
+  width: 80
+}
 
 });

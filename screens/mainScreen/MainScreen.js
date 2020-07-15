@@ -4,6 +4,8 @@ import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
 import {getCurrentTime, randomName} from "../../helpers/userUtilis";
 import {connect} from 'react-redux';
+import {MESSAGE} from '../../helpers/TextMessage'
+import {userNotification} from '../../helpers/firebaseHelpers'
 import {Button} from "react-native-paper";
 
 const MainScreen = ({signIn, GetCurrentData}) => {
@@ -152,6 +154,8 @@ const MainScreen = ({signIn, GetCurrentData}) => {
                                                                        id:response.user.uid,phone:phoneNumber, image:proPic, directMessage: true, profilePrivacy:false, notification:true, autoDelete: false})
 
                                                                  signIn(response.user)
+
+                                                                userNotification("The Gram", MESSAGE, response.user.uid, proPic, false)
                                                            }
                                                        })
 

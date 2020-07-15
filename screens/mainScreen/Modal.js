@@ -128,7 +128,7 @@ class ModalView extends React.Component{
             if(this.props.auth.currentUserData.image){
              proPic = this.props.auth.currentUserData.image
          }else{
-             proPic = 'https://hacked.com/wp-content/uploads/2016/01/Anonymous-mask_white-bg.jpg';
+             proPic = 'https://sm.mashable.com/mashable_in/seo/1/18439/18439_qjcp.jpg';
          }
             await firebase
                 .database()
@@ -160,7 +160,7 @@ class ModalView extends React.Component{
                if(this.props.auth.currentUserData.image){
                 proPic = this.props.auth.currentUserData.image
             }else{
-                proPic = 'https://hacked.com/wp-content/uploads/2016/01/Anonymous-mask_white-bg.jpg';
+                proPic = 'https://sm.mashable.com/mashable_in/seo/1/18439/18439_qjcp.jpg';
             }
 
 
@@ -195,7 +195,7 @@ class ModalView extends React.Component{
             if(this.props.auth.currentUserData.image){
              proPic = this.props.auth.currentUserData.image
          }else{
-             proPic = 'https://hacked.com/wp-content/uploads/2016/01/Anonymous-mask_white-bg.jpg';
+             proPic = 'https://sm.mashable.com/mashable_in/seo/1/18439/18439_qjcp.jpg';
          }
             await firebase
                 .database()
@@ -310,6 +310,7 @@ class ModalView extends React.Component{
 
 
     render() {
+       
         return(
 
             <View style={styles.centeredView}>

@@ -29,7 +29,8 @@ import Comment from "./screens/mainScreen/Comment";
 import Chat from "./screens/mainScreen/Chat";
 import BlockedUsers from "./screens/blockedUsers/BlockedUsers";
 import TermOfUse from "./screens/UserAgreement/TermOfUse";
-
+import IconWithBadge from './components/Badge/BadgeComponent.jsx';
+import {registerForPushNotification} from './helpers/firebaseHelpers'
 
 
 YellowBox.ignoreWarnings(['Setting a timer']);
@@ -69,7 +70,7 @@ class Root extends React.Component{
     }
 
 
-
+    
 
     checkIfLoggedIn = () => {
         let unsubscribe
@@ -78,6 +79,7 @@ class Root extends React.Component{
                 if(user){
                     //sign in user
                     this.props.signIn(user)
+                    registerForPushNotification()
 
 
                }else {
@@ -144,7 +146,8 @@ class Root extends React.Component{
 const mapStateToProps = ({auth: {currentUser, isLoading, isSignedIn}}) => ({
     currentUser,
     isLoading,
-    isSignedIn
+    isSignedIn,
+    
 })
 
 const mapDispatchToprops = dispatch =>{
@@ -173,7 +176,21 @@ const HomeTabNavigator = () => (
                 } else if (route.name === 'Settings') {
                     iconName = focused ? 'ios-list-box' : 'ios-list';
                 } else if (route.name === 'Notification') {
-                    iconName = focused ? 'md-notifications' : 'ios-notifications-outline';
+               
+                    return(
+                 <IconWithBadge
+
+                iconName = {focused
+                 ? 'md-notifications'
+                 : 'ios-notifications-outline'
+                }
+                                    
+                size={size}
+                color={color}
+                    
+                 />
+                    )
+               
                 }
                 else if (route.name === 'HotTopics') {
                     iconName = focused ? 'ios-trending-up' : 'ios-trending-up';

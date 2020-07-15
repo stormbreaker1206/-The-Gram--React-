@@ -1,7 +1,6 @@
 import React from 'react'
 import {View, Image} from "react-native";
 import {Video} from "expo-av";
-import * as VideoThumbnails from 'expo-video-thumbnails';
 class VideoPlayer extends React.Component{
 
     state={
@@ -19,7 +18,7 @@ class VideoPlayer extends React.Component{
 
   componentDidMount(){
    // this._video.setStatusAsync(1500)
-   this._video.setPositionAsync(1100)
+ //  this._video.setPositionAsync(1100)
   }
 
     render(){
